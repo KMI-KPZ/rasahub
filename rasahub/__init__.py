@@ -72,5 +72,9 @@ def main():
             inputmsg = dbconn.getNewDBMessage()
             print("Input from db: {}".format(inputmsg))
             reply = rasaconn.getReply(inputmsg)
-            print("Reply from rasa: {}".format(reply))
-            dbconn.saveToDB(reply)
+            if reply is not None:
+                print("Reply from rasa: {}".format(reply))
+                dbconn.saveToDB(reply)
+            else:
+                print("No reply from Rasa.")
+                continue
