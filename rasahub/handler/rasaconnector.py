@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import json
 import socket
 import time
+import select
 
 class RasaConnector():
     """
@@ -50,14 +51,13 @@ class RasaConnector():
         self.con.send(json.dumps(messagedata).encode())
         replied = 0
         timeout = time.time() + 5
-        while True:
-            if time.time() > timeout:
-                return ""
-            else:
-                reply = self.con.recv(1024).decode('utf-8')
-                if reply:
-                    replydata = {
-                        'reply': reply,
-                        'message_id': messagedata['message_id']
-                    }
-                    return replydata
+        ready = select.select([self.con], [], [], 5)
+        if ready[0]:
+            reply = self.con.recv(1024).decode('utf-8')
+            replydata = {
+                'reply': reply,
+                'message_id': messagedata['message_id']
+            }
+            return replydata
+        else:
+            return None
