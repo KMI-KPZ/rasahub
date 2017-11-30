@@ -9,7 +9,7 @@ class DBConnector():
     Connects to database, sends and receives messages
     """
 
-    def __init__(self, dbHost, dbName, dbPort, dbUser, dbPwd, trigger, bot_id):
+    def __init__(self, dbHost, dbName, dbPort, dbUser, dbPwd, trigger):
         """
         Initializes the DBConnector, establishes the database connection, sets instance variables
 
@@ -25,8 +25,6 @@ class DBConnector():
         :type state: str.
         :param trigger: string to trigger the bot
         :type state: str.
-        :param bot_id: humhub user id of the bot user
-        :type state: int.
         """
         self.cnx = self.connectToDB(dbHost, dbName, dbPort, dbUser, dbPwd)
         self.current_id = self.getCurrentID()

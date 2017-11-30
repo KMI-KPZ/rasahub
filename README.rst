@@ -4,7 +4,7 @@ Rasahub
 
 .. image:: https://travis-ci.org/frommie/Rasahub.svg?branch=master
     :target: https://travis-ci.org/frommie/Rasahub
-    
+
 Rasahub connects `Rasa_Core`_ with `Humhub`_ `Mail`_ .
 It contains the database-connector for a Humhub installation and a socket-connector
 for RasahubInputChannel which then can be used in Rasa_Core as an input channel.
@@ -87,7 +87,13 @@ And let the agent handle the channel:
 Testing
 =======
 
-mysql-server installed
+Prerequisites:
+
+* mysql-server installed
+
+Run Test:
+
+    python -m pytest tests/
 
 
 * License: MIT
