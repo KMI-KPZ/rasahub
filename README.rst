@@ -47,9 +47,11 @@ Parameters
 +============+==================+=======================================+===========+=============+
 | -dbu       | --dbuser         | Database username                     | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -dbp       | --dbpwd          | Database userpassword                 | required  | -           |
+| -dbpwd     | --dbpassword     | Database userpassword                 | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -dbh       | --dbhost         | Database host                         | optional  | 127.0.0.1   |
+| -dbp       | --dbport         | Database port                         | optional  | 3306        |
++------------+------------------+---------------------------------------+-----------+-------------+
+| -dbh       | --dbhost         | Database host                         | optional  | '127.0.0.1' |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -dbn       | --dbname         | Database name                         | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
@@ -57,7 +59,7 @@ Parameters
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -id        | --botid          | The bots Humhub-User ID               | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | 127.0.0.1   |
+| -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | '127.0.0.1' |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -rp        | --rasaport       | The port of RasahubInputchannel       | optional  | 5020        |
 +------------+------------------+---------------------------------------+-----------+-------------+
@@ -65,7 +67,7 @@ Parameters
 Example call
 ------------
 
-    rasahub -dbu humuser -dbp secretpassword -dbn humhub -t !bot -id 5
+    rasahub -dbu humuser -dbpwd secretpassword -dbn humhub -t !bot -id 5
 
 Configuring Rasa
 ================
@@ -78,6 +80,11 @@ And let the agent handle the channel:
 
     agent.handle_channel(RasahubInputChannel('127.0.0.1', 5020))
 
+
+Testing
+=======
+
+mysql-server installed
 
 
 * License: MIT

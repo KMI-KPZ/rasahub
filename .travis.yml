@@ -1,0 +1,10 @@
+language: python
+sudo: required
+python:
+- '2.7'
+- '3.6'
+install:
+- sudo apt-get update -qq
+- sudo apt-get install -qq mysql
+script:
+- travis_wait python -m pytest tests/
