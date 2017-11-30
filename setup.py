@@ -8,6 +8,7 @@ install_requires = [
 
 tests_requires = [
     'pytest',
+    'testing.common.database',
     'testing.mysqld'
 ]
 
