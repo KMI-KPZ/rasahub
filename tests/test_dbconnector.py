@@ -70,7 +70,7 @@ def handler(mysqld):
 Mysqld = testing.mysqld.MysqldFactory(cache_initialized_db=True,
                                       on_initialized=handler)
 
-mysqld = Mysqld()
+mysqld = Mysqld(my_cnf={'skip-networking': None})
 dbconn = DBConnector(mysqld.dsn()['host'],
                      mysqld.dsn()['db'],
                      mysqld.dsn()['port'],
