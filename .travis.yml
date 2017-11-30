@@ -8,3 +8,4 @@ install:
 - sudo apt-get install -qq mysql
 script:
 - travis_wait python -m pytest tests/
+ 
