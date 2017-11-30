@@ -2,6 +2,9 @@
 Rasahub
 =======
 
+.. image:: https://travis-ci.org/frommie/Rasahub.svg?branch=master
+    :target: https://travis-ci.org/frommie/Rasahub
+
 Rasahub connects `Rasa_Core`_ with `Humhub`_ `Mail`_ .
 It contains the database-connector for a Humhub installation and a socket-connector
 for RasahubInputChannel which then can be used in Rasa_Core as an input channel.
@@ -18,6 +21,8 @@ Prerequisites
 
 * Python installed
 * Humhub database access (if remote: make sure you have port 3306 opened)
+* Bots Humhub User Group created (name 'Bots')
+* Assign Bot User to Bots User Group in Humhub Backend
 
 Installation
 ============
@@ -47,17 +52,17 @@ Parameters
 +============+==================+=======================================+===========+=============+
 | -dbu       | --dbuser         | Database username                     | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -dbp       | --dbpwd          | Database userpassword                 | required  | -           |
+| -dbpwd     | --dbpassword     | Database userpassword                 | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -dbh       | --dbhost         | Database host                         | optional  | 127.0.0.1   |
+| -dbp       | --dbport         | Database port                         | optional  | 3306        |
++------------+------------------+---------------------------------------+-----------+-------------+
+| -dbh       | --dbhost         | Database host                         | optional  | '127.0.0.1' |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -dbn       | --dbname         | Database name                         | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -t         | --trigger        | Trigger-word (!bot for example)       | optional  | \!bot       |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -id        | --botid          | The bots Humhub-User ID               | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | 127.0.0.1   |
+| -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | '127.0.0.1' |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -rp        | --rasaport       | The port of RasahubInputchannel       | optional  | 5020        |
 +------------+------------------+---------------------------------------+-----------+-------------+
@@ -65,7 +70,7 @@ Parameters
 Example call
 ------------
 
-    rasahub -dbu humuser -dbp secretpassword -dbn humhub -t !bot -id 5
+    rasahub -dbu humuser -dbpwd secretpassword -dbn humhub -t !bot
 
 Configuring Rasa
 ================
@@ -78,6 +83,17 @@ And let the agent handle the channel:
 
     agent.handle_channel(RasahubInputChannel('127.0.0.1', 5020))
 
+
+Testing
+=======
+
+Prerequisites:
+
+* mysql-server installed
+
+Run Test:
+
+    python -m pytest tests/
 
 
 * License: MIT
