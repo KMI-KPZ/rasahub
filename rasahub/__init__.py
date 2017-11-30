@@ -13,7 +13,7 @@ def create_argument_parser():
             type=str,
             help="database username")
     parser.add_argument(
-            '-dbp', '--dbpwd',
+            '-dbpwd', '--dbpassword',
             required=True,
             type=str,
             help="database user password")
@@ -22,6 +22,11 @@ def create_argument_parser():
             type=str,
             default='127.0.0.1',
             help="database hostname")
+    parser.add_argument(
+            '-dbp', '--dbport',
+            type=int,
+            default='3306',
+            help="database port")
     parser.add_argument(
             '-dbn', '--dbname',
             required=True,
@@ -56,10 +61,11 @@ def main():
     arg_parser = create_argument_parser()
     cmdline_args = arg_parser.parse_args()
 
-    dbconn = DBConnector(cmdline_args.dbuser,
-                         cmdline_args.dbpwd,
-                         cmdline_args.dbhost,
+    dbconn = DBConnector(cmdline_args.dbhost,
                          cmdline_args.dbname,
+                         cmdline_args.dbport,
+                         cmdline_args.dbuser,
+                         cmdline_args.dbpwd,
                          cmdline_args.trigger,
                          cmdline_args.botid)
     print("Connected to database. Waiting for socket connection from Rasa on port {}".format(cmdline_args.rasaport))

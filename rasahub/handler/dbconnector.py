@@ -9,44 +9,48 @@ class DBConnector():
     Connects to database, sends and receives messages
     """
 
-    def __init__(self, dbUser, dbPwd, dbHost, dbName, trigger, bot_id):
+    def __init__(self, dbHost, dbName, dbPort, dbUser, dbPwd, trigger, bot_id):
         """
         Initializes the DBConnector, establishes the database connection, sets instance variables
 
-        :param dbUser: database username
-        :type name: str.
-        :param dbPwd: database userpassword
-        :type state: str.
         :param dbHost: database host address
         :type state: str.
         :param dbName: database name
+        :type state: str.
+        :param dbPort: database host port
+        :type state: int.
+        :param dbUser: database username
+        :type name: str.
+        :param dbPwd: database userpassword
         :type state: str.
         :param trigger: string to trigger the bot
         :type state: str.
         :param bot_id: humhub user id of the bot user
         :type state: int.
         """
-        self.cnx = self.connectToDB(dbUser, dbPwd, dbHost, dbName)
+        self.cnx = self.connectToDB(dbHost, dbName, dbPort, dbUser, dbPwd)
         self.current_id = self.getCurrentID()
         self.trigger = trigger
         self.bot_id = bot_id
 
-    def connectToDB(self, dbUser, dbPwd, dbHost, dbName):
+    def connectToDB(self, dbHost, dbName, dbPort, dbUser, dbPwd):
         """
         Establishes connection to the database
 
-        :param dbUser: database username
-        :type name: str.
-        :param dbPwd: database userpassword
-        :type state: str.
         :param dbHost: database host address
         :type state: str.
         :param dbName: database name
         :type state: str.
+        :param dbPort: database host port
+        :type state: int.
+        :param dbUser: database username
+        :type name: str.
+        :param dbPwd: database userpassword
+        :type state: str.
         :returns: MySQLConnection -- Instance of class MySQLConnection
         """
         try:
-            cnx = mysql.connector.connect(user=dbUser, password=dbPwd, host=dbHost, database=dbName, autocommit=True)
+            cnx = mysql.connector.connect(user=dbUser, port=int(dbPort), password=dbPwd, host=dbHost, database=dbName, autocommit=True)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
@@ -64,7 +68,7 @@ class DBConnector():
         :returns: int -- Current max message ID
         """
         cursor = self.cnx.cursor()
-        query = "SELECT MAX(id) FROM message_entry"
+        query = "SELECT MAX(id) FROM message_entry;"
         cursor.execute(query)
         return cursor.fetchone()[0]
 
@@ -116,7 +120,7 @@ class DBConnector():
     def saveToDB(self, messagedata):
         """
         Saves reply message from Rasa_Core to db
-        
+
         :param messagedata: Containing the reply from Rasa as string and the conversation id
         :type state: dictionary.
         """
