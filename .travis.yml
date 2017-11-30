@@ -3,5 +3,7 @@ sudo: required
 python:
   - '2.7'
   - '3.6'
+install:
+  - pip install .
 script:
   - travis_wait python -m pytest tests/
