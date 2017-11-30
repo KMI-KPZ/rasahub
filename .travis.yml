@@ -6,6 +6,6 @@ python:
 install:
   - pip install .[test]
 before_script:
-  - mysqld --initialize-insecure
+  - sudo mysqld --initialize-insecure
 script:
   - travis_wait python -m pytest tests/
