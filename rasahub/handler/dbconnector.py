@@ -31,7 +31,7 @@ class DBConnector():
         self.cnx = self.connectToDB(dbHost, dbName, dbPort, dbUser, dbPwd)
         self.current_id = self.getCurrentID()
         self.trigger = trigger
-        self.bot_id = bot_id
+        self.bot_id = self.getBotID()
 
     def connectToDB(self, dbHost, dbName, dbPort, dbUser, dbPwd):
         """
@@ -69,6 +69,17 @@ class DBConnector():
         """
         cursor = self.cnx.cursor()
         query = "SELECT MAX(id) FROM message_entry;"
+        cursor.execute(query)
+        return cursor.fetchone()[0]
+
+    def getBotID(self):
+        """
+        Gets a suitable Bot User ID from a Humhub User Group called 'Bots'
+
+        :returns: int -- Bots Humhub User ID
+        """
+        cursor = self.cnx.cursor()
+        query = "SELECT `user_id` FROM `group` JOIN `group_user` ON `group`.`id` = `group_user`.`group_id` WHERE `group`.`name` = 'Bots' ORDER BY user_id DESC LIMIT 1;"
         cursor.execute(query)
         return cursor.fetchone()[0]
 

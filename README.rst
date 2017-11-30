@@ -18,6 +18,8 @@ Prerequisites
 
 * Python installed
 * Humhub database access (if remote: make sure you have port 3306 opened)
+* Bots Humhub User Group created (name 'Bots')
+* Assign Bot User to Bots User Group in Humhub Backend
 
 Installation
 ============
@@ -57,8 +59,6 @@ Parameters
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -t         | --trigger        | Trigger-word (!bot for example)       | optional  | \!bot       |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -id        | --botid          | The bots Humhub-User ID               | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
 | -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | '127.0.0.1' |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -rp        | --rasaport       | The port of RasahubInputchannel       | optional  | 5020        |
@@ -67,7 +67,7 @@ Parameters
 Example call
 ------------
 
-    rasahub -dbu humuser -dbpwd secretpassword -dbn humhub -t !bot -id 5
+    rasahub -dbu humuser -dbpwd secretpassword -dbn humhub -t !bot
 
 Configuring Rasa
 ================

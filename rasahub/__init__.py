@@ -38,11 +38,6 @@ def create_argument_parser():
             default='!bot',
             help="bot trigger string")
     parser.add_argument(
-            '-id', '--botid',
-            required=True,
-            type=str,
-            help="bots user id in humhub")
-    parser.add_argument(
             '-rh', '--rasahost',
             type=str,
             default='127.0.0.1',
@@ -66,8 +61,7 @@ def main():
                          cmdline_args.dbport,
                          cmdline_args.dbuser,
                          cmdline_args.dbpwd,
-                         cmdline_args.trigger,
-                         cmdline_args.botid)
+                         cmdline_args.trigger)
     print("Connected to database. Waiting for socket connection from Rasa on port {}".format(cmdline_args.rasaport))
 
     rasaconn = RasaConnector(cmdline_args.rasahost,
