@@ -5,7 +5,6 @@ python:
 - '3.6'
 install:
 - sudo apt-get update -qq
-- sudo apt-get install -qq mysql
+- sudo apt-get install -qq mysql-server
 script:
 - travis_wait python -m pytest tests/
- 
