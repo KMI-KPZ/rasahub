@@ -14,6 +14,8 @@ and saves the response from Rasa_Core in the Humhub database.
 
 Feel free to extend the database-connector to another mailsystem or develop an API-connector.
 
+Please read the `Documentation`_ .
+
 ----
 
 Prerequisites
@@ -103,3 +105,4 @@ Run Test:
 .. _Humhub: https://www.humhub.org/de/site/index
 .. _Mail: https://github.com/humhub/humhub-modules-mail
 .. _PyPi: https://pypi.python.org/pypi/rasahub
+.. _Documentation: https://rasahub.readthedocs.io
