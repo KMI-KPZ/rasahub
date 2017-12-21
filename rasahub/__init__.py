@@ -60,7 +60,7 @@ def main():
                          cmdline_args.dbname,
                          cmdline_args.dbport,
                          cmdline_args.dbuser,
-                         cmdline_args.dbpwd,
+                         cmdline_args.dbpassword,
                          cmdline_args.trigger)
     print("Connected to database. Waiting for socket connection from Rasa on port {}".format(cmdline_args.rasaport))
 
