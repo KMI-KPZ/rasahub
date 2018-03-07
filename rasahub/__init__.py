@@ -13,7 +13,7 @@ def create_argument_parser():
             type=str,
             help="database username")
     parser.add_argument(
-            '-dbpwd', '--dbpassword',
+            '-dbp', '--dbpassword',
             required=True,
             type=str,
             help="database user password")
@@ -23,7 +23,7 @@ def create_argument_parser():
             default='127.0.0.1',
             help="database hostname")
     parser.add_argument(
-            '-dbp', '--dbport',
+            '-dbprt', '--dbport',
             type=int,
             default='3306',
             help="database port")
