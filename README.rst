@@ -54,9 +54,9 @@ Parameters
 +============+==================+=======================================+===========+=============+
 | -dbu       | --dbuser         | Database username                     | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -dbpwd     | --dbpassword     | Database userpassword                 | required  | -           |
+| -dbp       | --dbpassword     | Database userpassword                 | required  | -           |
 +------------+------------------+---------------------------------------+-----------+-------------+
-| -dbp       | --dbport         | Database port                         | optional  | 3306        |
+| -dbprt     | --dbport         | Database port                         | optional  | 3306        |
 +------------+------------------+---------------------------------------+-----------+-------------+
 | -dbh       | --dbhost         | Database host                         | optional  | '127.0.0.1' |
 +------------+------------------+---------------------------------------+-----------+-------------+
@@ -72,7 +72,7 @@ Parameters
 Example call
 ------------
 
-    rasahub -dbu humuser -dbpwd secretpassword -dbn humhub -t !bot
+    rasahub -dbu humuser -dbp secretpassword -dbn humhub -t !bot
 
 Configuring Rasa
 ================
