@@ -27,6 +27,7 @@ class DBConnector():
         :type state: str.
         """
         self.cnx = self.connectToDB(dbHost, dbName, dbPort, dbUser, dbPwd)
+        self.cursor = self.cnx.cursor()
         self.current_id = self.getCurrentID()
         self.trigger = trigger
         self.bot_id = self.getBotID()
@@ -65,10 +66,9 @@ class DBConnector():
 
         :returns: int -- Current max message ID
         """
-        cursor = self.cnx.cursor()
         query = "SELECT MAX(id) FROM message_entry;"
-        cursor.execute(query)
-        return cursor.fetchone()[0]
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
 
     def getBotID(self):
         """
@@ -76,50 +76,46 @@ class DBConnector():
 
         :returns: int -- Bots Humhub User ID
         """
-        cursor = self.cnx.cursor()
         query = "SELECT `user_id` FROM `group` JOIN `group_user` ON `group`.`id` = `group_user`.`group_id` WHERE `group`.`name` = 'Bots' ORDER BY user_id DESC LIMIT 1;"
-        cursor.execute(query)
-        return cursor.fetchone()[0]
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
 
-    def checkNewDBMessages(self):
+    def getNextID(self):
         """
-        Checks for new messages, saves the new message ID if a new message is available
+        Gets the next message ID from Humhub
 
-        :returns: bool -- True when new bot message is available, False if there is no new message
+        :returns: int -- Next message ID to process
         """
-        cursor = self.cnx.cursor()
-        query = ("SELECT MAX(id) FROM message_entry WHERE user_id <> %(bot_id)s AND (content LIKE %(trigger)s OR message_entry.message_id IN "
+        query = ("SELECT id FROM message_entry WHERE user_id <> %(bot_id)s AND (content LIKE %(trigger)s OR message_entry.message_id IN "
             "(SELECT DISTINCT message_entry.message_id FROM message_entry JOIN user_message "
-            "ON message_entry.message_id=user_message.message_id WHERE user_message.user_id = 5 ORDER BY message_entry.message_id))")
+            "ON message_entry.message_id=user_message.message_id WHERE user_message.user_id = 5 ORDER BY message_entry.message_id)) "
+            "AND id > %(current_id)s ORDER BY id ASC")
         data = {
             'bot_id': self.bot_id,
             'trigger': self.trigger + '%', # wildcard for SQL
+            'current_id': self.current_id,
         }
-        cursor.execute(query, data)
-        new_id = cursor.fetchone()[0]
-        cursor.close()
-        if self.current_id < new_id:
-            self.current_id = new_id
-            return True
+        self.cursor.execute(query, data)
+        results = self.cursor.fetchall()
+        if len(results) > 0: # fetchall returns list of results, each as a tuple
+            return results[0][0]
         else:
-            return False
+            return self.current_id
 
-    def getNewDBMessage(self):
+    def getMessage(self, msg_id):
         """
         Gets the newest message
 
         :returns: dictionary -- Containing the message itself as string and the conversation ID
         """
-        cursor = self.cnx.cursor()
-        query = "SELECT message_id, content FROM message_entry WHERE (user_id <> 5 AND id = {})".format(self.current_id)
-        cursor.execute(query)
-        result = cursor.fetchone()
+        query = "SELECT message_id, content FROM message_entry WHERE (user_id <> 5 AND id = {})".format(msg_id)
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
         message_id = result[0]
         if result[1][:len(self.trigger)] == self.trigger:
             message = result[1][len(self.trigger):].strip()
         else:
             message = result[1].strip()
-        cursor.close()
         messagedata = {
             'message': message,
             'message_id': message_id
@@ -133,7 +129,6 @@ class DBConnector():
         :param messagedata: Containing the reply from Rasa as string and the conversation id
         :type state: dictionary.
         """
-        cursor = self.cnx.cursor()
         query = ("INSERT INTO message_entry(message_id, user_id, content, created_at, created_by, updated_at, updated_by) "
             "VALUES (%(msg_id)s, %(bot_id)s, %(message)s, NOW(), %(bot_id)s, NOW(), %(bot_id)s)")
         data = {
@@ -142,9 +137,8 @@ class DBConnector():
           'message': messagedata['reply'],
         }
         try:
-            cursor.execute(query, data)
+            self.cursor.execute(query, data)
             self.cnx.commit()
-            cursor.close()
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")

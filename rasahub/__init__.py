@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
+from Queue import Queue
+from threading import Thread
 from rasahub.handler.dbconnector import DBConnector
 from rasahub.handler.rasaconnector import RasaConnector
-
 import argparse
+
+num_fetch_threads = 2
 
 def create_argument_parser():
     parser = argparse.ArgumentParser(
@@ -49,6 +52,19 @@ def create_argument_parser():
             help="port of rasa_core rasahubchannel")
     return parser
 
+def process_new_message(q, dbconn, rasaconn):
+    while True:
+        new_id = q.get()
+        inputmsg = dbconn.getMessage(new_id)
+        print("Input from db: {}".format(inputmsg))
+        reply = rasaconn.getReply(inputmsg)
+        if reply is not None:
+            print("Reply from rasa: {}".format(reply))
+            dbconn.saveToDB(reply)
+        else:
+            print("No reply from Rasa.")
+        q.task_done()
+
 def main():
     """
     Initializes DBConnector and RasaConnector, handles messages
@@ -67,14 +83,17 @@ def main():
     rasaconn = RasaConnector(cmdline_args.rasahost,
                              cmdline_args.rasaport)
 
+    q = Queue()
+    # spawn threads
+    for i in range(num_fetch_threads):
+        worker = Thread(target=process_new_message, args=(q, dbconn, rasaconn,))
+        worker.setDaemon(True)
+        worker.start()
+
     while (True):
-        if (dbconn.checkNewDBMessages()):
-            inputmsg = dbconn.getNewDBMessage()
-            print("Input from db: {}".format(inputmsg))
-            reply = rasaconn.getReply(inputmsg)
-            if reply is not None:
-                print("Reply from rasa: {}".format(reply))
-                dbconn.saveToDB(reply)
-            else:
-                print("No reply from Rasa.")
-                continue
+        new_id = dbconn.getNextID()
+        if (dbconn.current_id != new_id): # new messages
+            dbconn.current_id = new_id
+            q.put(new_id) # put new message to query
+
+    q.join()
