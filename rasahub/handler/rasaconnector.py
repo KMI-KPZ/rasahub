@@ -49,7 +49,9 @@ class RasaConnector():
         :type name: dictionary.
         :returns: dictionary - the reply from Rasa as string and conversation ID as string
         """
-        while True:
+        timeout = time.time() + 5
+        ready = select.select([self.con], [], [], 5)
+        if ready[0]:
             reply = self.con.recv(1024).decode('utf-8')
             reply = json.loads(reply)
             replydata = {
@@ -57,3 +59,5 @@ class RasaConnector():
                 'message_id': reply['message_id']
             }
             return replydata
+        else:
+            return None

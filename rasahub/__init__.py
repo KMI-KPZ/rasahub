@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 from Queue import Queue
-from threading import Thread
 from rasahub.handler.dbconnector import DBConnector
 from rasahub.handler.rasaconnector import RasaConnector
 import argparse
 import time
+import threading
 
 num_fetch_threads = 2
 
@@ -71,9 +71,9 @@ def setup_connections(cmdline_args):
                                   cmdline_args.rasaport)
     print("Rasa connection established")
 
-def rasa_in_thread(outputqueue):
+def rasa_in_thread(outputqueue, run_event):
     global rasaconn
-    while True:
+    while run_event.is_set():
         # if new message from rasa: save to db
         reply = rasaconn.getReply()
         if reply is not None:
@@ -82,9 +82,9 @@ def rasa_in_thread(outputqueue):
             print("Reply enqueued to Humhub")
         time.sleep(0.5)
 
-def humhub_in_thread(outputqueue):
+def humhub_in_thread(outputqueue, run_event):
     global dbconn
-    while True:
+    while run_event.is_set():
         new_id = dbconn.getNextID()
         if (dbconn.current_id != new_id): # new messages
             dbconn.current_id = new_id
@@ -94,17 +94,17 @@ def humhub_in_thread(outputqueue):
             print("Reply enqueued to Rasa")
         time.sleep(0.5)
 
-def rasa_output_handler(queue):
+def rasa_output_handler(queue, run_event):
     global rasaconn
-    while True:
+    while run_event.is_set():
         msg = queue.get()
         rasaconn.send(msg)
         print("Sent message to Rasa")
         queue.task_done()
 
-def humhub_output_handler(queue):
+def humhub_output_handler(queue, run_event):
     global dbconn
-    while True:
+    while run_event.is_set():
         reply = queue.get()
         dbconn.saveToDB(reply)
         print("Saved reply to DB")
@@ -119,40 +119,48 @@ def main():
 
     setup_connections(cmdline_args)
 
+    run_event = threading.Event()
+    run_event.set()
+
     # create queues for each job
     rasa_output_queue = Queue()
     humhub_output_queue = Queue()
 
     print("Queues created")
 
-    #rasa_input_thread = Thread(target=rasa_input_handler, args=(humhub_output_queue,))
-    #rasa_input_thread.start()
-
-    t1 = Thread(target = rasa_in_thread, args=(humhub_output_queue,))
-    t2 = Thread(target = humhub_in_thread, args=(rasa_output_queue,))
+    # create and start threads for input channels
+    t1 = threading.Thread(target = rasa_in_thread, args=(humhub_output_queue, run_event,))
+    t2 = threading.Thread(target = humhub_in_thread, args=(rasa_output_queue, run_event,))
 
     t1.start()
     t2.start()
 
-    #humhub_input_thread = Thread(target=humhub_input_handler, args=(rasa_output_queue,))
-    #humhub_input_thread.start()
-
     print("Input threads started")
 
-    # spawn worker threads
+    # spawn output worker threads
     for i in range(num_fetch_threads):
-        worker = Thread(target=humhub_output_handler, args=(humhub_output_queue,))
+        worker = threading.Thread(target=humhub_output_handler, args=(humhub_output_queue, run_event,))
         worker.setDaemon(True)
         worker.start()
 
     print("Humhub output threads started")
 
     for i in range(num_fetch_threads):
-        worker = Thread(target=rasa_output_handler, args=(rasa_output_queue,))
+        worker = threading.Thread(target=rasa_output_handler, args=(rasa_output_queue, run_event,))
         worker.setDaemon(True)
         worker.start()
 
     print("Rasa output threads started")
 
-    while True:
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Closing worker threads..")
+        run_event.clear()
+        t1.join()
+        t2.join()
+        rasa_output_queue.join()
+        humhub_output_queue.join()
+        print("All threads closed properly.")
         pass
