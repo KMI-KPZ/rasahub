@@ -4,8 +4,12 @@ from threading import Thread
 from rasahub.handler.dbconnector import DBConnector
 from rasahub.handler.rasaconnector import RasaConnector
 import argparse
+import time
 
 num_fetch_threads = 2
+
+global dbconn
+global rasaconn
 
 def create_argument_parser():
     parser = argparse.ArgumentParser(
@@ -52,18 +56,59 @@ def create_argument_parser():
             help="port of rasa_core rasahubchannel")
     return parser
 
-def process_new_message(q, dbconn, rasaconn):
+def setup_connections(cmdline_args):
+    global dbconn
+    global rasaconn
+
+    dbconn = DBConnector(cmdline_args.dbhost,
+                              cmdline_args.dbname,
+                              cmdline_args.dbport,
+                              cmdline_args.dbuser,
+                              cmdline_args.dbpassword,
+                              cmdline_args.trigger)
+    print("DB connection established")
+    rasaconn = RasaConnector(cmdline_args.rasahost,
+                                  cmdline_args.rasaport)
+    print("Rasa connection established")
+
+def rasa_in_thread(outputqueue):
+    global rasaconn
     while True:
-        new_id = q.get()
-        inputmsg = dbconn.getMessage(new_id)
-        print("Input from db: {}".format(inputmsg))
-        reply = rasaconn.getReply(inputmsg)
+        # if new message from rasa: save to db
+        reply = rasaconn.getReply()
         if reply is not None:
-            print("Reply from rasa: {}".format(reply))
-            dbconn.saveToDB(reply)
-        else:
-            print("No reply from Rasa.")
-        q.task_done()
+            print("Reply from Rasa: {}".format(reply))
+            outputqueue.put(reply)
+            print("Reply enqueued to Humhub")
+        time.sleep(0.5)
+
+def humhub_in_thread(outputqueue):
+    global dbconn
+    while True:
+        new_id = dbconn.getNextID()
+        if (dbconn.current_id != new_id): # new messages
+            dbconn.current_id = new_id
+            inputmsg = dbconn.getMessage(new_id)
+            print("New message: " + inputmsg['message'])
+            outputqueue.put(inputmsg) # put new message to rasa queue
+            print("Reply enqueued to Rasa")
+        time.sleep(0.5)
+
+def rasa_output_handler(queue):
+    global rasaconn
+    while True:
+        msg = queue.get()
+        rasaconn.send(msg)
+        print("Sent message to Rasa")
+        queue.task_done()
+
+def humhub_output_handler(queue):
+    global dbconn
+    while True:
+        reply = queue.get()
+        dbconn.saveToDB(reply)
+        print("Saved reply to DB")
+        queue.task_done()
 
 def main():
     """
@@ -72,28 +117,42 @@ def main():
     arg_parser = create_argument_parser()
     cmdline_args = arg_parser.parse_args()
 
-    dbconn = DBConnector(cmdline_args.dbhost,
-                         cmdline_args.dbname,
-                         cmdline_args.dbport,
-                         cmdline_args.dbuser,
-                         cmdline_args.dbpassword,
-                         cmdline_args.trigger)
-    print("Connected to database. Waiting for socket connection from Rasa on port {}".format(cmdline_args.rasaport))
+    setup_connections(cmdline_args)
 
-    rasaconn = RasaConnector(cmdline_args.rasahost,
-                             cmdline_args.rasaport)
+    # create queues for each job
+    rasa_output_queue = Queue()
+    humhub_output_queue = Queue()
 
-    q = Queue()
-    # spawn threads
+    print("Queues created")
+
+    #rasa_input_thread = Thread(target=rasa_input_handler, args=(humhub_output_queue,))
+    #rasa_input_thread.start()
+
+    t1 = Thread(target = rasa_in_thread, args=(humhub_output_queue,))
+    t2 = Thread(target = humhub_in_thread, args=(rasa_output_queue,))
+
+    t1.start()
+    t2.start()
+
+    #humhub_input_thread = Thread(target=humhub_input_handler, args=(rasa_output_queue,))
+    #humhub_input_thread.start()
+
+    print("Input threads started")
+
+    # spawn worker threads
     for i in range(num_fetch_threads):
-        worker = Thread(target=process_new_message, args=(q, dbconn, rasaconn,))
+        worker = Thread(target=humhub_output_handler, args=(humhub_output_queue,))
         worker.setDaemon(True)
         worker.start()
 
-    while (True):
-        new_id = dbconn.getNextID()
-        if (dbconn.current_id != new_id): # new messages
-            dbconn.current_id = new_id
-            q.put(new_id) # put new message to query
+    print("Humhub output threads started")
 
-    q.join()
+    for i in range(num_fetch_threads):
+        worker = Thread(target=rasa_output_handler, args=(rasa_output_queue,))
+        worker.setDaemon(True)
+        worker.start()
+
+    print("Rasa output threads started")
+
+    while True:
+        pass

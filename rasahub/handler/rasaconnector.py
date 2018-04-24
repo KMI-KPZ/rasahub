@@ -22,7 +22,6 @@ class RasaConnector():
         socket = self.establishSocket(rasaIP, rasaPort)
         socket.listen(5)
         c, addr = socket.accept()
-        print("Connection established: %s" % str(addr))
         self.con = c
 
     def establishSocket(self, ip, port):
@@ -39,7 +38,10 @@ class RasaConnector():
         newSocket.bind((ip, port))
         return newSocket
 
-    def getReply(self, messagedata):
+    def send(self, messagedata):
+        self.con.send(json.dumps(messagedata).encode())
+
+    def getReply(self):
         """
         Sends message to Rasa_Core, returns reply
 
@@ -47,17 +49,11 @@ class RasaConnector():
         :type name: dictionary.
         :returns: dictionary - the reply from Rasa as string and conversation ID as string
         """
-        message = messagedata['message']
-        self.con.send(json.dumps(messagedata).encode())
-        replied = 0
-        timeout = time.time() + 5
-        ready = select.select([self.con], [], [], 5)
-        if ready[0]:
+        while True:
             reply = self.con.recv(1024).decode('utf-8')
+            reply = json.loads(reply)
             replydata = {
-                'reply': reply,
-                'message_id': messagedata['message_id']
+                'reply': reply['message'],
+                'message_id': reply['message_id']
             }
             return replydata
-        else:
-            return None

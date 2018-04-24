@@ -37,4 +37,8 @@ class RasahubOutputChannel(OutputChannel):
     def __init__(self, socket):
         self.socket = socket
     def send_text_message(self, recipient_id, message):
-        self.socket.sendall(message.encode('utf-8'))
+        reply = {
+            "message": message.encode('utf-8'),
+            "message_id": recipient_id
+        }
+        self.socket.sendall(json.dumps(reply))
