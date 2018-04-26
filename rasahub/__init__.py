@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from Queue import Queue
 from rasahub.handler.dbconnector import DBConnector
-from rasahub.handler.rasaconnector import RasaConnector
+from rasahub.plugins.rasa import RasaConnector
 import argparse
 import time
 import threading
@@ -67,9 +67,7 @@ def setup_connections(cmdline_args):
                               cmdline_args.dbpassword,
                               cmdline_args.trigger)
     print("DB connection established")
-    rasaconn = RasaConnector(cmdline_args.rasahost,
-                                  cmdline_args.rasaport)
-    print("Rasa connection established")
+
 
 def rasa_in_thread(outputqueue, run_event):
     global rasaconn
@@ -117,36 +115,30 @@ def main():
     arg_parser = create_argument_parser()
     cmdline_args = arg_parser.parse_args()
 
-    setup_connections(cmdline_args)
+    setup_connections(cmdline_args);
 
+    rasamodule = RasaConnector(cmdline_args.rasahost, cmdline_args.rasaport)
+
+    # global run event
     run_event = threading.Event()
     run_event.set()
 
     # create queues for each job
-    rasa_output_queue = Queue()
-    humhub_output_queue = Queue()
+    rasaqueue = Queue()
+    humhubqueue = Queue()
 
-    print("Queues created")
+    rasamodule.start(run_event, rasaqueue, humhubqueue)
 
     # create and start threads for input channels
-    t1 = threading.Thread(target = rasa_in_thread, args=(humhub_output_queue, run_event,))
-    t2 = threading.Thread(target = humhub_in_thread, args=(rasa_output_queue, run_event,))
+    t2 = threading.Thread(target = humhub_in_thread, args=(rasaqueue, run_event,))
 
-    t1.start()
     t2.start()
 
     print("Input threads started")
 
     # spawn output worker threads
     for i in range(num_fetch_threads):
-        worker = threading.Thread(target=humhub_output_handler, args=(humhub_output_queue, run_event,))
-        worker.setDaemon(True)
-        worker.start()
-
-    print("Humhub output threads started")
-
-    for i in range(num_fetch_threads):
-        worker = threading.Thread(target=rasa_output_handler, args=(rasa_output_queue, run_event,))
+        worker = threading.Thread(target=humhub_output_handler, args=(humhubqueue, run_event,))
         worker.setDaemon(True)
         worker.start()
 
@@ -158,9 +150,8 @@ def main():
     except KeyboardInterrupt:
         print("Closing worker threads..")
         run_event.clear()
-        t1.join()
+        rasamodule.end()
         t2.join()
-        rasa_output_queue.join()
         humhub_output_queue.join()
         print("All threads closed properly.")
         pass
