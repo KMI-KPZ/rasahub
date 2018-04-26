@@ -10,9 +10,7 @@ if is_py2:
 else:
     import queue as queue
 
-
 class RasahubPlugin(object):
-
     def __init__(self):
         print("create queue")
         self.queue = queue.Queue()

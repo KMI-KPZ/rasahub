@@ -1,11 +1,7 @@
-from __future__ import unicode_literals
+from rasahub.plugins.plugin import RasahubPlugin
 
 import mysql.connector
 from mysql.connector import errorcode
-import time
-import threading
-
-from rasahub.plugins.plugin import RasahubPlugin
 
 class HumhubConnector(RasahubPlugin):
     def __init__(self, dbHost, dbName, dbPort, dbUser, dbPwd, trigger):

@@ -1,10 +1,8 @@
 from __future__ import unicode_literals
 
-import json
 import socket
 import time
 import select
-import threading
 
 from rasahub.plugins.plugin import RasahubPlugin
 
