@@ -4,7 +4,24 @@ import mysql.connector
 from mysql.connector import errorcode
 
 class HumhubConnector(RasahubPlugin):
+    """
+    HumhubConnector is subclass of RasahubPlugin
+    """
     def __init__(self, dbHost, dbName, dbPort, dbUser, dbPwd, trigger):
+        """
+        Initializes database connection
+
+        :param dbHost: database host address
+        :type state: str.
+        :param dbName: database name
+        :type state: str.
+        :param dbPort: database host port
+        :type state: int.
+        :param dbUser: database username
+        :type name: str.
+        :param dbPwd: database userpassword
+        :type state: str.
+        """
         super(HumhubConnector, self).__init__()
 
         self.cnx = self.connectToDB(dbHost, dbName, dbPort, dbUser, dbPwd)
@@ -129,6 +146,11 @@ class HumhubConnector(RasahubPlugin):
                 print(err)
 
     def receive(self):
+        """
+        Implements receive function
+
+        :returns: dictionary - Received message with conversation ID
+        """
         new_id = self.getNextID()
         if (self.current_id != new_id): # new messages
             self.current_id = new_id

@@ -11,13 +11,20 @@ else:
     import queue as queue
 
 class RasahubPlugin(object):
+    """
+    Main class for a plugin
+    """
+
     def __init__(self):
-        print("create queue")
+        """
+        Creates Message sending queue
+        """
         self.queue = queue.Queue()
-        print("queue created")
 
     def start(self, run_event, outputqueue):
-        # start receiving and sending tasks
+        """
+        Starts sending and receiving threads
+        """
         self.receiving = threading.Thread(target = self.in_thread, args = (outputqueue, run_event,))
         self.sending = threading.Thread(target = self.out_thread, args = (self.queue, run_event,))
 
@@ -26,11 +33,17 @@ class RasahubPlugin(object):
         return True
 
     def end(self):
+        """
+        Safely closes threads
+        """
         self.receiving.join()
         self.sending.join()
         return True
 
     def in_thread(self, outputqueue, run_event):
+        """
+        Input message thread
+        """
         while run_event.is_set():
             in_message = self.receive()
             if in_message is not None:
@@ -40,6 +53,9 @@ class RasahubPlugin(object):
             time.sleep(0.5)
 
     def out_thread(self, inputqueue, run_event):
+        """
+        Output message thread
+        """
         while run_event.is_set():
             out_message = inputqueue.get()
             self.send(out_message)
@@ -47,7 +63,13 @@ class RasahubPlugin(object):
             inputqueue.task_done()
 
     def send(self, messagedata):
+        """
+        Sending function, to be implemented by plugin
+        """
         raise NotImplementedError
 
     def receive(self):
+        """
+        Receiving function, to be implemented by plugin
+        """
         raise NotImplementedError

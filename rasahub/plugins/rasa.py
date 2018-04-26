@@ -8,7 +8,7 @@ from rasahub.plugins.plugin import RasahubPlugin
 
 class RasaConnector(RasahubPlugin):
     """
-    Rasa Connection handler using sockets
+    RasaConnector is subclass of RasahubPlugin
     """
 
     def __init__(self, ip, port):
@@ -29,6 +29,9 @@ class RasaConnector(RasahubPlugin):
         self.con = c
 
     def send(self, messagedata):
+        """
+        Sends message to Rasa via socket connection
+        """
         self.con.send(json.dumps(messagedata).encode())
 
     def receive(self):
