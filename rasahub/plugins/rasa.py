@@ -4,7 +4,7 @@ import socket
 import time
 import select
 
-from rasahub.plugins.plugin import RasahubPlugin
+from rasahub.plugin import RasahubPlugin
 
 class RasaConnector(RasahubPlugin):
     """

@@ -1,4 +1,4 @@
-from rasahub.plugins.plugin import RasahubPlugin
+from rasahub.plugin import RasahubPlugin
 
 import mysql.connector
 from mysql.connector import errorcode
