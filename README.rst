@@ -34,7 +34,10 @@ Pypi package
 
 Install via pip:
 
-    pip install rasahub
+.. code-block:: bash
+
+  pip install rasahub
+
 
 Usage
 =====
@@ -64,7 +67,10 @@ Command-Line API
 
 Start rasahub:
 
-    python -m rasahub
+.. code-block:: bash
+
+  python -m rasahub
+
 
 
 Configuring Rasa
@@ -72,11 +78,17 @@ Configuring Rasa
 
 In your Rasa bots run.py just import the channel using
 
-    from rasahub.rasahubchannel import RasahubInputChannel
+.. code-block:: python
+
+  from rasahub.rasahubchannel import RasahubInputChannel
+
 
 And let the agent handle the channel:
 
-    agent.handle_channel(RasahubInputChannel('127.0.0.1', 5020))
+.. code-block:: python
+
+  agent.handle_channel(RasahubInputChannel('127.0.0.1', 5020))
+
 
 
 Testing
@@ -89,7 +101,10 @@ Prerequisites:
 
 Run Test:
 
-    python -m pytest tests/
+.. code-block:: python
+
+  python -m pytest tests/
+
 
 
 * License: MIT
