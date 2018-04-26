@@ -38,12 +38,8 @@ def main():
                                    config['humhub']['dbpasswd'],
                                    config['humhub']['trigger'])
 
-    # global run event
-    run_event = threading.Event()
-    run_event.set()
-
-    rasamodule.start(run_event, humhubmodule.queue)
-    humhubmodule.start(run_event, rasamodule.queue)
+    rasamodule.start(humhubmodule.queue)
+    humhubmodule.start(rasamodule.queue)
 
     print("Input threads started")
 
@@ -52,8 +48,6 @@ def main():
             pass
     except KeyboardInterrupt:
         print("Closing worker threads..")
-        run_event.clear()
-        rasamodule.end()
         humhubmodule.end()
-        print("All threads closed properly.")
-        pass
+        rasamodule.end()
+        return True

@@ -20,13 +20,15 @@ class RasahubPlugin(object):
         Creates Message sending queue
         """
         self.queue = queue.Queue()
+        self.in_event = threading.Event()
+        self.out_event = threading.Event()
 
-    def start(self, run_event, outputqueue):
+    def start(self, outputqueue):
         """
         Starts sending and receiving threads
         """
-        self.receiving = threading.Thread(target = self.in_thread, args = (outputqueue, run_event,))
-        self.sending = threading.Thread(target = self.out_thread, args = (self.queue, run_event,))
+        self.receiving = threading.Thread(target = self.in_thread, args = (outputqueue, self.in_event,))
+        self.sending = threading.Thread(target = self.out_thread, args = (self.queue, self.out_event,))
 
         self.receiving.start()
         self.sending.start()
@@ -36,15 +38,19 @@ class RasahubPlugin(object):
         """
         Safely closes threads
         """
-        self.receiving.join()
-        self.sending.join()
+        self.queue.join()
+        print("queue joined..")
+        self.in_event.set()
+        print("in threads closed..")
+        self.out_event.set()
+        print("out threads closed..")
         return True
 
     def in_thread(self, outputqueue, run_event):
         """
         Input message thread
         """
-        while run_event.is_set():
+        while (not run_event.is_set()):
             in_message = self.receive()
             if in_message is not None:
                 print("Reply from Rasa: {}".format(in_message))
@@ -56,11 +62,14 @@ class RasahubPlugin(object):
         """
         Output message thread
         """
-        while run_event.is_set():
-            out_message = inputqueue.get()
-            self.send(out_message)
-            print("Sent message to Rasa")
-            inputqueue.task_done()
+        while (not run_event.is_set()):
+            try:
+                out_message = inputqueue.get(False)
+                self.send(out_message)
+                inputqueue.task_done()
+                print("Sent message to Rasa")
+            except queue.Empty:
+                pass
 
     def send(self, messagedata):
         """
