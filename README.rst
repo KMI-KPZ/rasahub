@@ -39,40 +39,32 @@ Install via pip:
 Usage
 =====
 
+Create configuration
+--------------------
+
+Create file config.yml in working path. Example:
+
+```
+rasa:
+  host: '127.0.0.1'
+  port: 5020
+
+humhub:
+  host: '127.0.0.1'
+  port: 3306
+  dbname: 'humhub'
+  dbuser: 'humhubuser'
+  dbpasswd: 'humhub123'
+  trigger: '!bot'
+```
+
 Command-Line API
 ----------------
 
 Start rasahub:
 
-    rasahub <<parameters>>
+    python -m rasahub
 
-Parameters
-----------
-
-+------------+------------------+---------------------------------------+-----------+-------------+
-| Parameter  | Parameter(long)  | Description                           | Required  | Default     |
-+============+==================+=======================================+===========+=============+
-| -dbu       | --dbuser         | Database username                     | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbp       | --dbpassword     | Database userpassword                 | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbprt     | --dbport         | Database port                         | optional  | 3306        |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbh       | --dbhost         | Database host                         | optional  | '127.0.0.1' |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbn       | --dbname         | Database name                         | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -t         | --trigger        | Trigger-word (!bot for example)       | optional  | \!bot       |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | '127.0.0.1' |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -rp        | --rasaport       | The port of RasahubInputchannel       | optional  | 5020        |
-+------------+------------------+---------------------------------------+-----------+-------------+
-
-Example call
-------------
-
-    rasahub -dbu humuser -dbp secretpassword -dbn humhub -t !bot
 
 Configuring Rasa
 ================
@@ -92,6 +84,7 @@ Testing
 Prerequisites:
 
 * mysql-server installed
+* testing dependencies installed: pip install .[test]
 
 Run Test:
 
