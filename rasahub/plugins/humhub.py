@@ -6,47 +6,17 @@ import time
 from Queue import Queue
 import threading
 
-class HumhubConnector:
+from rasahub.plugins.plugin import RasahubPlugin
+
+class HumhubConnector(RasahubPlugin):
     def __init__(self, dbHost, dbName, dbPort, dbUser, dbPwd, trigger):
+        super(HumhubConnector, self).__init__()
+
         self.cnx = self.connectToDB(dbHost, dbName, dbPort, dbUser, dbPwd)
         self.cursor = self.cnx.cursor()
         self.current_id = self.getCurrentID()
         self.trigger = trigger
         self.bot_id = self.getBotID()
-
-    def start(self, run_event, inputqueue, outputqueue):
-        # start receiving and sending tasks
-        self.receiving = threading.Thread(target = self.humhub_in_thread, args = (outputqueue, run_event,))
-        self.sending = threading.Thread(target = self.humhub_output_handler, args = (inputqueue, run_event,))
-
-        self.receiving.start()
-        self.sending.start()
-        return True
-
-    def end(self):
-        self.receiving.join()
-        self.sending.join()
-        return True
-
-    def humhub_in_thread(self, outputqueue, run_event):
-        global dbconn
-        while run_event.is_set():
-            new_id = self.getNextID()
-            if (self.current_id != new_id): # new messages
-                self.current_id = new_id
-                inputmsg = self.getMessage(new_id)
-                print("New message: " + inputmsg['message'])
-                outputqueue.put(inputmsg) # put new message to rasa queue
-                print("Reply enqueued to Rasa")
-            time.sleep(0.5)
-
-    def humhub_output_handler(self, queue, run_event):
-        global dbconn
-        while run_event.is_set():
-            reply = queue.get()
-            self.saveToDB(reply)
-            print("Saved reply to DB")
-            queue.task_done()
 
     def connectToDB(self, dbHost, dbName, dbPort, dbUser, dbPwd):
         """
@@ -138,7 +108,7 @@ class HumhubConnector:
         }
         return messagedata
 
-    def saveToDB(self, messagedata):
+    def send(self, messagedata):
         """
         Saves reply message from Rasa_Core to db
 
@@ -162,3 +132,10 @@ class HumhubConnector:
                 print("Database does not exist")
             else:
                 print(err)
+
+    def receive(self):
+        new_id = self.getNextID()
+        if (self.current_id != new_id): # new messages
+            self.current_id = new_id
+            inputmsg = self.getMessage(new_id)
+            return inputmsg

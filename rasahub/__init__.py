@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 from Queue import Queue
-from rasahub.handler.dbconnector import DBConnector
 from rasahub.plugins.rasa import RasaConnector
 from rasahub.plugins.humhub import HumhubConnector
 import argparse
@@ -73,12 +72,8 @@ def main():
     run_event = threading.Event()
     run_event.set()
 
-    # create queues for each job
-    rasaqueue = Queue()
-    humhubqueue = Queue()
-
-    rasamodule.start(run_event, rasaqueue, humhubqueue)
-    humhubmodule.start(run_event, humhubqueue, rasaqueue)
+    rasamodule.start(run_event, humhubmodule.queue)
+    humhubmodule.start(run_event, rasamodule.queue)
 
     print("Input threads started")
 
