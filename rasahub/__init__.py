@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
-from rasahub.plugins.rasa import RasaConnector
-from rasahub.plugins.humhub import HumhubConnector
 import time
 import threading
 import yaml
+import os
+import imp
 
 import sys
 is_py2 = sys.version[0] == '2'
@@ -18,13 +18,20 @@ def main():
     """
     Initializes DBConnector and RasaConnector, handles messages
     """
+    # load plugins from plugins directory
+    plugins = os.listdir("plugins/")
+    rasa = imp.load_source("RasaConnector","./plugins/rasa.py")
+    humhub = imp.load_source("HumhubConnector","./plugins/humhub.py")
+    #for plugin in plugins:
+
+    # load config
     configpath = "config.yml"
     config = yaml.safe_load(open(configpath))
 
-    rasamodule = RasaConnector(config['rasa']['host'],
+    rasamodule = rasa.RasaConnector(config['rasa']['host'],
                                config['rasa']['port'])
 
-    humhubmodule = HumhubConnector(config['humhub']['host'],
+    humhubmodule = humhub.HumhubConnector(config['humhub']['host'],
                                    config['humhub']['dbname'],
                                    config['humhub']['port'],
                                    config['humhub']['dbuser'],
