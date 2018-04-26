@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import mysql.connector
 from mysql.connector import errorcode
 import time
-from Queue import Queue
 import threading
 
 from rasahub.plugins.plugin import RasahubPlugin

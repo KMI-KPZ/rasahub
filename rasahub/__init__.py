@@ -1,10 +1,16 @@
 from __future__ import unicode_literals
-from Queue import Queue
 from rasahub.plugins.rasa import RasaConnector
 from rasahub.plugins.humhub import HumhubConnector
 import argparse
 import time
 import threading
+
+import sys
+is_py2 = sys.version[0] == '2'
+if is_py2:
+    import Queue as queue
+else:
+    import queue as queue
 
 num_fetch_threads = 2
 

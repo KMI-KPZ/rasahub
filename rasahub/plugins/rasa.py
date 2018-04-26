@@ -4,7 +4,6 @@ import json
 import socket
 import time
 import select
-from Queue import Queue
 import threading
 
 from rasahub.plugins.plugin import RasahubPlugin

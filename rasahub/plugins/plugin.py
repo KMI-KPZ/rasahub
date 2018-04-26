@@ -2,14 +2,20 @@ from __future__ import unicode_literals
 
 import json
 import time
-from Queue import Queue
 import threading
+import sys
+is_py2 = sys.version[0] == '2'
+if is_py2:
+    import Queue as queue
+else:
+    import queue as queue
+
 
 class RasahubPlugin(object):
 
     def __init__(self):
         print("create queue")
-        self.queue = Queue()
+        self.queue = queue.Queue()
         print("queue created")
 
     def start(self, run_event, outputqueue):
