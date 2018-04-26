@@ -44,7 +44,7 @@ Create configuration
 
 Create file config.yml in working path. Example:
 
-```
+.. code-block:: yaml
 rasa:
   host: '127.0.0.1'
   port: 5020
@@ -56,7 +56,7 @@ humhub:
   dbuser: 'humhubuser'
   dbpasswd: 'humhub123'
   trigger: '!bot'
-```
+
 
 Command-Line API
 ----------------
