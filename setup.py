@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'rasa-core',
-    'rasa_nlu',
-    'mysql-connector==2.1.4'
+    'PyYaml',
 ]
 
 tests_requires = [
+    'rasahub-humhub',
+    'rasahub-rasa',
     'testing.common.database',
     'testing.mysqld'
 ]
@@ -17,7 +17,7 @@ extras_requires = {
 
 setup(
     name='rasahub',
-    version='0.1.2',
+    version='0.2.0',
     description='Rasahub connects Rasa_core to Humhub Mail',
     author='Christian Frommert',
     author_email='christian.frommert@gmail.com',

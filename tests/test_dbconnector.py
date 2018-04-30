@@ -8,7 +8,7 @@ import testing.mysqld
 
 import pdb
 
-from rasahub.handler.dbconnector import DBConnector
+from rasahub_humhub import HumhubConnector
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -119,12 +119,15 @@ Mysqld = testing.mysqld.MysqldFactory(cache_initialized_db=True,
                                       on_initialized=handler)
 
 mysqld = Mysqld()
-dbconn = DBConnector(mysqld.dsn()['host'],
-                     mysqld.dsn()['db'],
-                     mysqld.dsn()['port'],
-                     mysqld.dsn()['user'],
-                     '',
-                     '!bot')
+args = {
+    'host': mysqld.dsn()['host'],
+    'port': mysqld.dsn()['port'],
+    'dbname': mysqld.dsn()['db'],
+    'dbuser': mysqld.dsn()['user'],
+    'dbpasswd': '',
+    'trigger': '!bot'
+}
+dbconn = HumhubConnector(**args)
 
 def tearDownModule():
     mysqld.stop()
@@ -140,8 +143,6 @@ class MyTestCase(unittest.TestCase):
     def test_checkLatestMessageID(self):
         self.assertEqual(dbconn.current_id, 7)
 
-    def test_checkNewMessages(self):
-        self.assertFalse(dbconn.checkNewDBMessages(), False)
     def test_checkNewDBMessage(self):
         conn = mysql.connector.connect(**mysqld.dsn())
         cursor = conn.cursor()
@@ -151,13 +152,13 @@ class MyTestCase(unittest.TestCase):
         cursor.close()
         conn.commit()
         conn.close()
-        self.assertTrue(dbconn.checkNewDBMessages())
+        self.assertEqual(dbconn.getNextID(), 8)
 
     def test_getNewDBMessage(self):
-        self.assertEqual(dbconn.getNewDBMessage(), {'message': 'Test', 'message_id': 1})
+        self.assertEqual(dbconn.getMessage(8), {'message': 'Test', 'message_id': 1})
 
     def test_saveToDB(self):
-        dbconn.saveToDB({'reply': 'Bots Answer', 'message_id': 1})
+        dbconn.send({'reply': 'Bots Answer', 'message_id': 1})
 
         conn = mysql.connector.connect(**mysqld.dsn())
         cursor = conn.cursor()
