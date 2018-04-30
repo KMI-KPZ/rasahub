@@ -8,7 +8,7 @@ import testing.mysqld
 
 import pdb
 
-from rasahub.plugins.humhub import HumhubConnector
+from rasahub_humhub import HumhubConnector
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -119,12 +119,15 @@ Mysqld = testing.mysqld.MysqldFactory(cache_initialized_db=True,
                                       on_initialized=handler)
 
 mysqld = Mysqld()
-dbconn = HumhubConnector(mysqld.dsn()['host'],
-                     mysqld.dsn()['db'],
-                     mysqld.dsn()['port'],
-                     mysqld.dsn()['user'],
-                     '',
-                     '!bot')
+args = {
+    'host': mysqld.dsn()['host'],
+    'port': mysqld.dsn()['port'],
+    'dbname': mysqld.dsn()['db'],
+    'dbuser': mysqld.dsn()['user'],
+    'dbpasswd': '',
+    'trigger': '!bot'
+}
+dbconn = HumhubConnector(**args)
 
 def tearDownModule():
     mysqld.stop()
