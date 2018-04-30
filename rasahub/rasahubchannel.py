@@ -4,9 +4,17 @@ from __future__ import print_function
 from __future__ import unicode_literals
 import socket
 import json
+import sys
 
 from rasa_core.channels.channel import UserMessage
 from rasa_core.channels.channel import InputChannel, OutputChannel
+
+def getFormat(message):
+    is_py2 = sys.version[0] == '2'
+    if is_py2:
+        return message.encode('utf-8')
+    else:
+        return message
 
 class RasahubInputChannel(InputChannel):
     """
@@ -38,7 +46,7 @@ class RasahubOutputChannel(OutputChannel):
         self.socket = socket
     def send_text_message(self, recipient_id, message):
         reply = {
-            "message": message.encode('utf-8'),
+            "message": getFormat(message),
             "message_id": recipient_id
         }
-        self.socket.sendall(json.dumps(reply))
+        self.socket.sendall(json.dumps(reply).encode('utf-8'))

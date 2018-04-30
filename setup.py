@@ -1,9 +1,7 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'rasa-core',
-    'rasa_nlu',
-    'mysql-connector==2.1.4'
+    'PyYaml',
 ]
 
 tests_requires = [
