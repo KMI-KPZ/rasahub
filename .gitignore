@@ -20,12 +20,15 @@
 .ipynb_checkpoints
 .ruby-version
 .tox
+.pytest_cache/
+.ropeproject/
 build/
 build/lib/
 dist/
 docs/_build
 mongodb/
 node_modules/
+config.yml
 npm-debug.log
 profile.*
 scala/

@@ -1,80 +1,127 @@
 from __future__ import unicode_literals
-from rasahub.handler.dbconnector import DBConnector
-from rasahub.handler.rasaconnector import RasaConnector
+import json
+import time
+import threading
+import sys
+import yaml
+import os
+import imp
+import importlib
+is_py2 = sys.version[0] == '2'
+if is_py2:
+    import Queue as queue
+else:
+    import queue as queue
 
-import argparse
+num_fetch_threads = 2
 
-def create_argument_parser():
-    parser = argparse.ArgumentParser(
-            description='starts rasahub')
-    parser.add_argument(
-            '-dbu', '--dbuser',
-            required=True,
-            type=str,
-            help="database username")
-    parser.add_argument(
-            '-dbp', '--dbpassword',
-            required=True,
-            type=str,
-            help="database user password")
-    parser.add_argument(
-            '-dbh', '--dbhost',
-            type=str,
-            default='127.0.0.1',
-            help="database hostname")
-    parser.add_argument(
-            '-dbprt', '--dbport',
-            type=int,
-            default='3306',
-            help="database port")
-    parser.add_argument(
-            '-dbn', '--dbname',
-            required=True,
-            type=str,
-            help="database name")
-    parser.add_argument(
-            '-t', '--trigger',
-            type=str,
-            default='!bot',
-            help="bot trigger string")
-    parser.add_argument(
-            '-rh', '--rasahost',
-            type=str,
-            default='127.0.0.1',
-            help="host address of rasa_core")
-    parser.add_argument(
-            '-rp', '--rasaport',
-            type=int,
-            default=5020,
-            help="port of rasa_core rasahubchannel")
-    return parser
+class RasahubPlugin(object):
+    """
+    Main class for a plugin
+    """
+
+    plugins = set()
+
+    def __init__(self):
+        """
+        Creates Message sending queue
+        """
+        self.queue = queue.Queue()
+        self.in_event = threading.Event()
+        self.out_event = threading.Event()
+        self.plugins.add(self)
+
+    def start(self, outputqueue):
+        """
+        Starts sending and receiving threads
+        """
+        self.receiving = threading.Thread(target = self.in_thread, args = (outputqueue, self.in_event,))
+        self.sending = threading.Thread(target = self.out_thread, args = (self.queue, self.out_event,))
+
+        self.receiving.start()
+        self.sending.start()
+        return True
+
+    def end(self):
+        """
+        Safely closes threads
+        """
+        self.queue.join()
+        print("queue joined..")
+        self.in_event.set()
+        print("in threads closed..")
+        self.out_event.set()
+        print("out threads closed..")
+        return True
+
+    def in_thread(self, outputqueue, run_event):
+        """
+        Input message thread
+        """
+        while (not run_event.is_set()):
+            in_message = self.receive()
+            if in_message is not None:
+                print("Reply from Rasa: {}".format(in_message))
+                outputqueue.put(in_message)
+                print("Reply enqueued to Humhub")
+            time.sleep(0.5)
+
+    def out_thread(self, inputqueue, run_event):
+        """
+        Output message thread
+        """
+        while (not run_event.is_set()):
+            try:
+                out_message = inputqueue.get(False)
+                self.send(out_message)
+                inputqueue.task_done()
+                print("Sent message to Rasa")
+            except queue.Empty:
+                pass
+
+    def send(self, messagedata):
+        """
+        Sending function, to be implemented by plugin
+        """
+        raise NotImplementedError
+
+    def receive(self):
+        """
+        Receiving function, to be implemented by plugin
+        """
+        raise NotImplementedError
 
 def main():
     """
     Initializes DBConnector and RasaConnector, handles messages
     """
-    arg_parser = create_argument_parser()
-    cmdline_args = arg_parser.parse_args()
+    # loader:
+    # from rasahub.humhub import HumhubConnector
+    # ...
 
-    dbconn = DBConnector(cmdline_args.dbhost,
-                         cmdline_args.dbname,
-                         cmdline_args.dbport,
-                         cmdline_args.dbuser,
-                         cmdline_args.dbpassword,
-                         cmdline_args.trigger)
-    print("Connected to database. Waiting for socket connection from Rasa on port {}".format(cmdline_args.rasaport))
+    # load plugins from plugins directory
+    configpath = "config.yml"
+    config = yaml.safe_load(open(configpath))
+    plugins = {}
+    for plugin in config:
+        try:
+            lib = __import__('rasahub_' + plugin)
+        except:
+            print("Plugin rasahub_" + plugin + "not found.")
+        else:
+            method = config[plugin]['classname']
+            globals()[plugin] = lib
+            plugins[plugin] = eval(plugin + '.' + method)(**config[plugin]['init'])
+    for plugin in plugins:
+        plugins[plugin].start(plugins[config[plugin]['out']].queue)
 
-    rasaconn = RasaConnector(cmdline_args.rasahost,
-                             cmdline_args.rasaport)
+    print("Input threads started")
 
-    while (True):
-        if (dbconn.checkNewDBMessages()):
-            inputmsg = dbconn.getNewDBMessage()
-            print("Input from db: {}".format(inputmsg))
-            reply = rasaconn.getReply(inputmsg)
-            if reply is not None:
-                print("Reply from rasa: {}".format(reply))
-                dbconn.saveToDB(reply)
-            else:
-                print("No reply from Rasa.")
-                continue
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Closing worker threads..")
+        for plugin in plugins:
+            plugins[plugin].end()
+        return True
