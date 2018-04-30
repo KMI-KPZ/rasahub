@@ -17,7 +17,7 @@ extras_requires = {
 
 setup(
     name='rasahub',
-    version='0.1.2',
+    version='0.2.0',
     description='Rasahub connects Rasa_core to Humhub Mail',
     author='Christian Frommert',
     author_email='christian.frommert@gmail.com',
