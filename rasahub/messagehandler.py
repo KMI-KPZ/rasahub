@@ -20,6 +20,7 @@ class RasahubHandler():
         self.plugins = {}
 
     def add_plugin(self, pluginname, plugin):
+        plugin.set_name(pluginname)
         self.plugins[pluginname] = plugin
         print("added " + pluginname)
 

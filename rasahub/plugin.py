@@ -15,8 +15,6 @@ class RasahubPlugin(object):
     Main class for a plugin
     """
 
-    plugins = set()
-
     def __init__(self):
         """
         Creates Message sending queue
@@ -24,7 +22,7 @@ class RasahubPlugin(object):
         self.outputqueue = queue.Queue()
         self.in_event = threading.Event()
         self.out_event = threading.Event()
-        self.plugins.add(self)
+        self.name = ''
 
     def start(self, main_queue):
         """
@@ -52,6 +50,9 @@ class RasahubPlugin(object):
     def add_target(self, classname):
         self.target = classname
 
+    def set_name(pluginname):
+        self.name = pluginname
+
     def in_thread(self, main_queue, run_event):
         """
         Input message thread
@@ -71,7 +72,14 @@ class RasahubPlugin(object):
         while (not run_event.is_set()):
             try:
                 out_message = outputqueue.get(False)
-                self.send(out_message['message'], main_queue)
+                if out_message['message'][0] == '$':
+                    # command
+                    out_message = process_command(out_message)
+                # check target after processing
+                if out_message['target'] == self.name:
+                    self.send(out_message['message'], main_queue)
+                else:
+                    main_queue.put(out_message)
                 outputqueue.task_done()
             except queue.Empty:
                 pass
@@ -85,5 +93,11 @@ class RasahubPlugin(object):
     def receive(self):
         """
         Receiving function, to be implemented by plugin
+        """
+        raise NotImplementedError
+
+    def process_message(self, message):
+        """
+        Output message hook, to be implemented by plugin
         """
         raise NotImplementedError
