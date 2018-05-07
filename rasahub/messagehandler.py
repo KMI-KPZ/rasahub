@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from rasahub.message import RasahubMessage
+
 import threading
 import sys
 import json
@@ -46,7 +48,7 @@ class RasahubHandler():
                 # get item from main queue
                 message = main_queue.get(False)
                 # determine target
-                self.plugins[message['target']].outputqueue.put(message)
+                self.plugins[message.target].outputqueue.put(message)
                 main_queue.task_done()
             except queue.Empty:
                 pass

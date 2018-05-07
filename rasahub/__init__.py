@@ -20,9 +20,6 @@ def main():
     for plugin in config:
         try:
             lib = __import__(config[plugin]['package'])
-        except:
-            print("Package " + config[plugin]['package'] + " not found.")
-        else:
             method = config[plugin]['classname']
             globals()[plugin] = lib
             if config[plugin]['init'] is not None:
@@ -31,6 +28,8 @@ def main():
                 plugin_instance = eval(plugin + '.' + method)()
             plugin_instance.add_target(config[plugin]['out'])
             messagehandler.add_plugin(plugin, plugin_instance)
+        except:
+            print("Package " + config[plugin]['package'] + " not found.")
 
     messagehandler.start()
     #import pdb; pdb.set_trace()
