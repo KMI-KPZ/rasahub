@@ -38,7 +38,7 @@ class RasahubPlugin(object):
         self.sending.start()
         return True
 
-    def end(self):
+    def end_process(self):
         """
         Safely closes threads
         """
@@ -48,6 +48,7 @@ class RasahubPlugin(object):
         print("in threads closed..")
         self.out_event.set()
         print("out threads closed..")
+        self.end()
         return True
 
     def add_target(self, classname):
@@ -76,7 +77,7 @@ class RasahubPlugin(object):
             try:
                 out_message = outputqueue.get(False)
                 print(out_message)
-                if out_message.message[0] == '$':
+                if len(out_message.message) > 0 and out_message.message[0] == '$':
                     # find escape characters in message string
                     first_index = out_message.message.find('$')
                     second_index = out_message.message[first_index+1:].find('$')
@@ -115,5 +116,11 @@ class RasahubPlugin(object):
     def process_message(self, message):
         """
         Output message hook, to be implemented by plugin
+        """
+        raise NotImplementedError
+
+    def end(self):
+        """
+        Function to close connections etc., to be implemented by plugin
         """
         raise NotImplementedError
