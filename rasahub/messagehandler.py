@@ -35,10 +35,10 @@ class RasahubHandler():
         print("plugins started")
         return True
 
-    def end(self):
+    def end_processes(self):
         self.mainqueue.join()
         for plugin in self.plugins:
-            self.plugins[plugin].end()
+            self.plugins[plugin].end_process()
         self.thread_event.set()
         return True
 
