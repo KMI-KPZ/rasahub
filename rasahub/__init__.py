@@ -20,16 +20,22 @@ def main():
     for plugin in config:
         try:
             lib = __import__(config[plugin]['package'])
-            method = config[plugin]['classname']
-            globals()[plugin] = lib
+        except:
+            print("Package " + config[plugin]['package'] + " not found.")
+        method = config[plugin]['classname']
+        globals()[plugin] = lib
+        try:
             if config[plugin]['init'] is not None:
                 plugin_instance = eval(plugin + '.' + method)(**config[plugin]['init'])
             else:
                 plugin_instance = eval(plugin + '.' + method)()
-            plugin_instance.add_target(config[plugin]['out'])
-            messagehandler.add_plugin(plugin, plugin_instance)
+            if plugin_instance is not None:
+                plugin_instance.add_target(config[plugin]['out'])
+                messagehandler.add_plugin(plugin, plugin_instance)
+            else:
+                print("plugin " + plugin + "could not be started")
         except:
-            print("Package " + config[plugin]['package'] + " not found.")
+            print("plugin " + plugin + " could not be started")
 
     messagehandler.start()
     #import pdb; pdb.set_trace()
@@ -41,5 +47,5 @@ def main():
             pass
     except KeyboardInterrupt:
         print("Closing worker threads..")
-        messagehandler.end()
+        messagehandler.end_processes()
         return True
