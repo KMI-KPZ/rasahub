@@ -22,9 +22,6 @@ Prerequisites
 =============
 
 * Python installed
-* Humhub database access (if remote: make sure you have port 3306 opened)
-* Bots Humhub User Group created (name 'Bots')
-* Assign Bot User to Bots User Group in Humhub Backend
 
 Installation
 ============
@@ -48,6 +45,7 @@ Create configuration
 Create file config.yml in working path. Example:
 
 .. code-block:: yaml
+
 rasa:
   package: 'rasahub_rasa'
   classname: 'RasaConnector'
