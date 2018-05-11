@@ -43,11 +43,11 @@ class RasahubPlugin(object):
         Safely closes threads
         """
         self.outputqueue.join()
-        print("queue joined..")
+        print(self.name + " queue joined..")
         self.in_event.set()
-        print("in threads closed..")
+        print(self.name + " in threads closed..")
         self.out_event.set()
-        print("out threads closed..")
+        print(self.name + " out threads closed..")
         self.end()
         return True
 
@@ -76,7 +76,6 @@ class RasahubPlugin(object):
         while (not run_event.is_set()):
             try:
                 out_message = outputqueue.get(False)
-                print(out_message)
                 if len(out_message.message) > 0 and out_message.message[0] == '$':
                     # find escape characters in message string
                     first_index = out_message.message.find('$')
@@ -85,14 +84,14 @@ class RasahubPlugin(object):
                     command = out_message.message[first_index+1:second_index+1]
                     payload = {}
                     if len(out_message.message[second_index+2:]) > 0:
-                        payload['args'] = out_message.message[second_index+2:]
+                        payload['args'] = json.loads(out_message.message[second_index+2:])
                     payload['message_id'] = out_message.message_id
                     payload['message_source'] = out_message.source
                     payload['message_target'] = out_message.target
                     out_message = self.process_command(command, payload)
                 # check target after processing
                 if out_message.target == self.name:
-                    self.send(out_message.message, main_queue)
+                    self.send(out_message, main_queue)
                     # free space
                     del out_message
                 else:
