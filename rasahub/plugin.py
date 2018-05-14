@@ -31,8 +31,9 @@ class RasahubPlugin(object):
         """
         Starts sending and receiving threads
         """
-        self.receiving = threading.Thread(target = self.in_thread, args = (main_queue, self.in_event,))
-        self.sending = threading.Thread(target = self.out_thread, args = (self.outputqueue, main_queue, self.out_event,))
+        self.main_queue = main_queue
+        self.receiving = threading.Thread(target = self.in_thread, args = (self.main_queue, self.in_event,))
+        self.sending = threading.Thread(target = self.out_thread, args = (self.outputqueue, self.main_queue, self.out_event,))
 
         self.receiving.start()
         self.sending.start()
@@ -100,7 +101,7 @@ class RasahubPlugin(object):
             except queue.Empty:
                 pass
 
-    def send(self, messagedata, main_queue):
+    def send(self, messagedata):
         """
         Sending function, to be implemented by plugin
         """
@@ -112,7 +113,7 @@ class RasahubPlugin(object):
         """
         raise NotImplementedError
 
-    def process_message(self, message):
+    def process_command(self, message, main_queue):
         """
         Output message hook, to be implemented by plugin
         """
