@@ -89,7 +89,7 @@ class RasahubPlugin(object):
                     payload['message_id'] = out_message.message_id
                     payload['message_source'] = out_message.source
                     payload['message_target'] = out_message.target
-                    out_message = self.process_command(command, payload)
+                    out_message = self.process_command(command, payload, out_message)
                 # check target after processing
                 if out_message.target == self.name:
                     self.send(out_message, main_queue)
@@ -113,7 +113,7 @@ class RasahubPlugin(object):
         """
         raise NotImplementedError
 
-    def process_command(self, message, main_queue):
+    def process_command(self, message, out_message):
         """
         Output message hook, to be implemented by plugin
         """
