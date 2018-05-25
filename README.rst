@@ -46,25 +46,25 @@ Create file config.yml in working path. Example:
 
 .. code-block:: yaml
 
-rasa:
-  package: 'rasahub_rasa'
-  classname: 'RasaConnector'
-  out: 'humhub'
-  init:
-    host: '127.0.0.1'
-    port: 5020
+  rasa:
+    package: 'rasahub_rasa'
+    classname: 'RasaConnector'
+    out: 'humhub'
+    init:
+      host: '127.0.0.1'
+      port: 5020
 
-humhub:
-  package: 'rasahub_humhub'
-  classname: 'HumhubConnector'
-  out: 'rasa'
-  init:
-    host: '127.0.0.1'
-    port: 3306
-    dbname: 'humhub'
-    dbuser: 'humhubuser'
-    dbpasswd: 'humhub123'
-    trigger: '!bot'
+  humhub:
+    package: 'rasahub_humhub'
+    classname: 'HumhubConnector'
+    out: 'rasa'
+    init:
+      host: '127.0.0.1'
+      port: 3306
+      dbname: 'humhub'
+      dbuser: 'humhubuser'
+      dbpasswd: 'humhub123'
+      trigger: '!bot'
 
 
 Command-Line API
