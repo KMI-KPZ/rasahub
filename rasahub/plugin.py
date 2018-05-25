@@ -5,6 +5,7 @@ from rasahub.message import RasahubMessage
 import threading
 import sys
 import time
+import json
 
 is_py2 = sys.version[0] == '2'
 if is_py2:
@@ -68,7 +69,7 @@ class RasahubPlugin(object):
                 # add source and target to message
                 message = RasahubMessage(message = in_message['message'], message_id = in_message['message_id'], source = self.name, target = self.target)
                 main_queue.put(message)
-            time.sleep(0.5)
+            #time.sleep(0.5)
 
     def out_thread(self, outputqueue, main_queue, run_event):
         """
@@ -91,12 +92,13 @@ class RasahubPlugin(object):
                     payload['message_target'] = out_message.target
                     out_message = self.process_command(command, payload, out_message)
                 # check target after processing
-                if out_message.target == self.name:
-                    self.send(out_message, main_queue)
-                    # free space
-                    del out_message
-                else:
-                    main_queue.put(out_message)
+                if out_message is not None:
+                    if out_message.target == self.name:
+                        self.send(out_message, main_queue)
+                        # free space
+                        del out_message
+                    else:
+                        main_queue.put(out_message)
                 outputqueue.task_done()
             except queue.Empty:
                 pass

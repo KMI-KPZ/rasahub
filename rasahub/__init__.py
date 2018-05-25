@@ -12,33 +12,33 @@ from rasahub.plugin import RasahubPlugin
 
 def main():
     """
-    Initializes DBConnector and RasaConnector, handles messages
+    Initializes plugins, handles messages
     """
     messagehandler = RasahubHandler()
     configpath = "config.yml"
     config = yaml.safe_load(open(configpath))
+
     for plugin in config:
         try:
             lib = __import__(config[plugin]['package'])
+            method = config[plugin]['classname']
+            globals()[plugin] = lib
         except:
             print("Package " + config[plugin]['package'] + " not found.")
-        method = config[plugin]['classname']
-        globals()[plugin] = lib
         try:
             if config[plugin]['init'] is not None:
                 plugin_instance = eval(plugin + '.' + method)(**config[plugin]['init'])
             else:
                 plugin_instance = eval(plugin + '.' + method)()
             if plugin_instance is not None:
-                plugin_instance.add_target(config[plugin]['out'])
-                messagehandler.add_plugin(plugin, plugin_instance)
+                plugin_instance.add_target(config[plugin]['out']) # depracted
+                messagehandler.add_plugin(plugin, config[plugin]['type'], plugin_instance)
             else:
                 print("plugin " + plugin + "could not be started")
         except:
             print("plugin " + plugin + " could not be started")
 
     messagehandler.start()
-    #import pdb; pdb.set_trace()
 
     print("Input threads started")
 

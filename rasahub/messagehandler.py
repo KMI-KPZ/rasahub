@@ -20,25 +20,36 @@ class RasahubHandler():
         self.mainqueue = queue.Queue()
         self.thread_event = threading.Event()
         self.plugins = {}
+        self.plugins['interface'] = {}
+        self.plugins['interpreter'] = {}
+        self.plugins['datastore'] = {}
+        self.plugins['all'] = {}
 
-    def add_plugin(self, pluginname, plugin):
+    def add_plugin(self, pluginname, plugintype, plugin):
         plugin.set_name(pluginname)
-        self.plugins[pluginname] = plugin
+        if ((plugintype == 'interface') or
+           (plugintype == 'interpreter') or
+           (plugintype == 'datastore')):
+            self.plugins[plugintype][pluginname] = plugin
+        self.plugins['all'][pluginname] = plugin
         print("added " + pluginname)
 
     def start(self):
         self.mainthread = threading.Thread(target = self.main_thread, args = (self.mainqueue, self.thread_event,))
         self.mainthread.start()
 
-        for plugin in self.plugins:
-            self.plugins[plugin].start(self.mainqueue)
+        # start interface and interpreter plugins
+        for plugin in self.plugins['interface']:
+            self.plugins['interface'][plugin].start(self.mainqueue)
+        for plugin in self.plugins['interpreter']:
+            self.plugins['interpreter'][plugin].start(self.mainqueue)
         print("plugins started")
         return True
 
     def end_processes(self):
         self.mainqueue.join()
-        for plugin in self.plugins:
-            self.plugins[plugin].end_process()
+        for plugin in self.plugins['all']:
+            self.plugins['all'][plugin].end_process()
         self.thread_event.set()
         return True
 
@@ -48,7 +59,19 @@ class RasahubHandler():
                 # get item from main queue
                 message = main_queue.get(False)
                 # determine target
-                self.plugins[message.target].outputqueue.put(message)
+                if message.target == 'interface':
+                    for plugin in self.plugins['interface']:
+                        if message.source != plugin:
+                            self.plugins['interface'][plugin].outputqueue.put(message)
+                elif message.target == 'interpreter':
+                    for plugin in self.plugins['interpreter']:
+                        if message.source != plugin:
+                            self.plugins['interpreter'][plugin].outputqueue.put(message)
+                else:
+                    for plugin in self.plugins['all']:
+                        if message.source != plugin:
+                            self.plugins['all'][plugin].outputqueue.put(message)
+
                 main_queue.task_done()
             except queue.Empty:
                 pass
