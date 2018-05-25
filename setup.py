@@ -7,6 +7,7 @@ install_requires = [
 tests_requires = [
     'rasahub-humhub',
     'rasahub-rasa',
+    'rasahub-google-calendar',
     'testing.common.database',
     'testing.mysqld'
 ]
