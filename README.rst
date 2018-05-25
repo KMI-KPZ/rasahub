@@ -2,8 +2,8 @@
 Rasahub
 =======
 
-.. image:: https://travis-ci.org/frommie/Rasahub.svg?branch=master
-    :target: https://travis-ci.org/frommie/Rasahub
+.. image:: https://travis-ci.org/frommie/rasahub.svg?branch=master
+    :target: https://travis-ci.org/frommie/rasahub
 
 Rasahub connects `Rasa_Core`_ with `Humhub`_ `Mail`_ .
 It contains the database-connector for a Humhub installation and a socket-connector
