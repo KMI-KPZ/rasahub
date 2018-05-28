@@ -25,7 +25,7 @@ import os
 import sphinx_rtd_theme
 
 _version__ = None
-exec(open('../rasa_core/version.py').read())
+exec(open('../rasahub/version.py').read())
 
 def run_apidoc(_):
 	from sphinx.apidoc import main
