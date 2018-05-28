@@ -9,7 +9,8 @@ tests_requires = [
     'rasahub-rasa',
     'rasahub-google-calendar',
     'testing.common.database',
-    'testing.mysqld'
+    'testing.mysqld',
+    'nltk',
 ]
 
 extras_requires = {
