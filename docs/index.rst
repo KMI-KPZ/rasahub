@@ -16,7 +16,9 @@ Currently there are following plugins available:
 * `Rasahub-Google-Calendar`_ to retrieve and save calendar entries from and to Google Calendar.
 * `Rasahub-Debug`_ to send and receive messages to and from a socket debugger called `Rasahub-Debug-Client`_ .
 
+
 These plugins are available as source and also as pypi packages:
+
 * Rasahub: pip install rasahub
 * Rasahub-Rasa: pip install rasahub-rasa
 * Rasahub-Humhub: pip install rasahub-humhub

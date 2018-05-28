@@ -9,9 +9,13 @@ dumped JSON format.
 
 All hooks are defined in the plugins process_command function:
 
+.. code-block:: python
+
     def process_command(self, command, payload, out_message):
 
-The command is the command_name without '$'. The payload contains
+
+The command is the command_name without '$'. The payload contains:
+
 * payload['args']: Arguments after $command_name$
 * payload['message_id']: Origin message ID
 * payload['message_source']: Origin message source

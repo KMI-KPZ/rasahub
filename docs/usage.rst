@@ -10,6 +10,8 @@ First, you have to create a configuration, initializing all your plugins and
 route messages. Needed parameters for each plugin should be in there respective
 documentation. Following a basic debug-configuration to get an idea:
 
+.. code-block:: YAML
+
     debug1:
       package: 'rasahub_debug'
       classname: 'DebugConnector'
@@ -36,5 +38,7 @@ Starting
 --------
 
 Now you can start rasahub using:
+
+.. code-block:: bash
 
     python -m rasahub

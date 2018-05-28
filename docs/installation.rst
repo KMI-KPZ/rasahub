@@ -15,6 +15,8 @@ Pypi package
 
 Install via pip:
 
+.. code-block:: bash
+
     pip install rasahub
 
 
@@ -22,6 +24,8 @@ Bleeding-Edge Version
 ---------------------
 
 Install from sources:
+
+.. code-block:: bash
 
     git clone https://github.com/DServSys/rasahub.git
     cd rasahub

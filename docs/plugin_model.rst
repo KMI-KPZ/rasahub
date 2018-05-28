@@ -17,7 +17,10 @@ In example-plugin you have to create following files:
 
 * MANIFEST.in - containing following string:
 
+.. code-block:: bash
+
     include LICENSE README.rst
+
 
 * README.rst - with a basic documentation of your plugin
 
@@ -76,57 +79,57 @@ you define your Plugin class and the initialization method:
 
 .. code-block:: python
 
-from rasahub import RasahubPlugin
-from rasahub.message import RasahubMessage
+    from rasahub import RasahubPlugin
+    from rasahub.message import RasahubMessage
 
-import fancy_api
+    import fancy_api
 
-    class ExamplePlugin(RasahubPlugin):
-        """
-        ExamplePlugin is subclass of RasahubPlugin
-        """
-        def __init__(self, **kwargs):
+        class ExamplePlugin(RasahubPlugin):
             """
-            Initializes the example plugin
+            ExamplePlugin is subclass of RasahubPlugin
             """
-
-            super(HumhubConnector, self).__init__()
-
-            parameter = kwargs.get('parameter', 'default-value')
-            self.exampleparameter = parameter
-            self.apiconnection = fancy_api.connect(parameter)
-
-
-        def send(self, messagedata, main_queue):
-            """
-            Sends message to example plugin output like socket connection or
-            database
-            """
-            self.apiconnection.save(messagedata)
-
-
-        def receive(self):
-            """
-            Receives message from plugin input
-            """
-            return self.apiconnection.receive()
-
-
-        def process_command(self, command, payload, out_message):
-            """
-            Command hook before sending, returns a Rasahub message object
-            """
-            reply = RasahubMessage(
-                message = "Command unknown",
-                message_id = payload['message_id'],
-                target = payload['message_target'],
-                source = payload['message_source']
-            )
-            return reply
-
-
-            def end(self):
+            def __init__(self, **kwargs):
                 """
-                Closes connections
+                Initializes the example plugin
                 """
-                self.apiconnection.close()
+
+                super(HumhubConnector, self).__init__()
+
+                parameter = kwargs.get('parameter', 'default-value')
+                self.exampleparameter = parameter
+                self.apiconnection = fancy_api.connect(parameter)
+
+
+            def send(self, messagedata, main_queue):
+                """
+                Sends message to example plugin output like socket connection or
+                database
+                """
+                self.apiconnection.save(messagedata)
+
+
+            def receive(self):
+                """
+                Receives message from plugin input
+                """
+                return self.apiconnection.receive()
+
+
+            def process_command(self, command, payload, out_message):
+                """
+                Command hook before sending, returns a Rasahub message object
+                """
+                reply = RasahubMessage(
+                    message = "Command unknown",
+                    message_id = payload['message_id'],
+                    target = payload['message_target'],
+                    source = payload['message_source']
+                )
+                return reply
+
+
+                def end(self):
+                    """
+                    Closes connections
+                    """
+                    self.apiconnection.close()
