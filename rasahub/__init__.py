@@ -11,8 +11,10 @@ from rasahub.messagehandler import RasahubHandler
 from rasahub.plugin import RasahubPlugin
 
 def main():
-    """
-    Initializes plugins, handles messages
+    """The main function initializes plugins and handles messages.
+    It starts the messagehandler, registers all plugins and starts the threads.
+    When a Keyboard interruption is registered it starts closing all threads.
+    
     """
     messagehandler = RasahubHandler()
     configpath = "config.yml"

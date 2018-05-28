@@ -14,13 +14,12 @@ else:
     import queue as queue
 
 class RasahubPlugin(object):
-    """
-    Main class for a plugin
+    """Main class for a plugin.
+
     """
 
     def __init__(self):
-        """
-        Creates Message sending queue
+        """Creates message sending queue.
         """
         self.outputqueue = queue.Queue()
         self.in_event = threading.Event()
@@ -29,8 +28,10 @@ class RasahubPlugin(object):
         self.name = ''
 
     def start(self, main_queue):
-        """
-        Starts sending and receiving threads
+        """Starts sending and receiving threads.
+
+        Args:
+            main_queue: Main message queue of handler
         """
         self.main_queue = main_queue
         self.receiving = threading.Thread(target = self.in_thread, args = (self.main_queue, self.in_event,))
@@ -41,8 +42,8 @@ class RasahubPlugin(object):
         return True
 
     def end_process(self):
-        """
-        Safely closes threads
+        """Safely closes threads.
+
         """
         self.outputqueue.join()
         print(self.name + " queue joined..")
@@ -54,14 +55,30 @@ class RasahubPlugin(object):
         return True
 
     def add_target(self, classname):
+        """Adds target to plugin.
+
+        Args:
+            classname: Classname of target plugin
+
+        """
         self.target = classname
 
     def set_name(self, pluginname):
+        """Sets name of plugin.
+
+        Args:
+            pluginname: Name of the plugin
+
+        """
         self.name = pluginname
 
     def in_thread(self, main_queue, run_event):
-        """
-        Input message thread
+        """Input message thread.
+
+        Args:
+            main_queue: Main message queue of Handler
+            run_event: Thread run event
+
         """
         while (not run_event.is_set()):
             in_message = self.receive()
@@ -72,8 +89,13 @@ class RasahubPlugin(object):
             #time.sleep(0.5)
 
     def out_thread(self, outputqueue, main_queue, run_event):
-        """
-        Output message thread
+        """Output message thread.
+
+        Args:
+            outputqueue: Output queue of plugin
+            main_queue: Main message queue of Handler
+            run_event: Thread run event
+
         """
         while (not run_event.is_set()):
             try:
@@ -104,25 +126,25 @@ class RasahubPlugin(object):
                 pass
 
     def send(self, messagedata):
-        """
-        Sending function, to be implemented by plugin
+        """Sending function, to be implemented by plugin.
+        
         """
         raise NotImplementedError
 
     def receive(self):
-        """
-        Receiving function, to be implemented by plugin
+        """Receiving function, to be implemented by plugin.
+
         """
         raise NotImplementedError
 
     def process_command(self, message, out_message):
-        """
-        Output message hook, to be implemented by plugin
+        """Output message hook, to be implemented by plugin.
+
         """
         raise NotImplementedError
 
     def end(self):
-        """
-        Function to close connections etc., to be implemented by plugin
+        """Function to close connections etc., to be implemented by plugin.
+
         """
         raise NotImplementedError

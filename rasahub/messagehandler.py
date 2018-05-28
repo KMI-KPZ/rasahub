@@ -12,11 +12,15 @@ else:
     import queue as queue
 
 class RasahubHandler():
-    """
-    Handles messages, keeps main queue, gets tasks from queue and sends to plugin workers
+    """RasahubHandler Handles messages, keeps main queue, gets tasks from queue
+    and sends to plugin workers.
+
     """
 
     def __init__(self):
+        """Init method creates main queue and sets plugin dicts
+
+        """
         self.mainqueue = queue.Queue()
         self.thread_event = threading.Event()
         self.plugins = {}
@@ -26,6 +30,14 @@ class RasahubHandler():
         self.plugins['all'] = {}
 
     def add_plugin(self, pluginname, plugintype, plugin):
+        """Method to add a plugin to RasahubHandler
+
+        Args:
+            pluginname: Name of the plugin
+            plugintype: Type of the plugin (interface / interpreter / datastore)
+            plugin: Instance of plugin
+
+        """
         plugin.set_name(pluginname)
         if ((plugintype == 'interface') or
            (plugintype == 'interpreter') or
@@ -35,6 +47,12 @@ class RasahubHandler():
         print("added " + pluginname)
 
     def start(self):
+        """Start method starts the handling thread and all plugin threads.
+
+        Returns:
+            True if all plugins were started properly.
+
+        """
         self.mainthread = threading.Thread(target = self.main_thread, args = (self.mainqueue, self.thread_event,))
         self.mainthread.start()
 
@@ -47,6 +65,13 @@ class RasahubHandler():
         return True
 
     def end_processes(self):
+        """Ending method ends processes of handler itself and plugins. Also
+        joins main queue.
+
+        Returns:
+            True if all threads could be ended.
+
+        """
         self.mainqueue.join()
         for plugin in self.plugins['all']:
             self.plugins['all'][plugin].end_process()
@@ -54,6 +79,13 @@ class RasahubHandler():
         return True
 
     def main_thread(self, main_queue, main_event):
+        """Main thread handles message transfers between plugins
+
+        Args:
+            main_queue: Main message queue
+            main_event: Main thread event
+
+        """
         while (not main_event.is_set()):
             try:
                 # get item from main queue
