@@ -23,6 +23,8 @@
 import sys
 import os
 import sphinx_rtd_theme
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../rasahub/'))
 
 
@@ -47,11 +49,11 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = 'source/index'
 
 # General information about the project.
 project = u'Rasahub'
-copyright = u'2017, Christian Frommert'
+copyright = u'2018, Christian Frommert'
 author = u'Christian Frommert'
 
 # The version info for the project you're documenting, acts as replacement for

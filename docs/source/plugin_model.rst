@@ -9,7 +9,7 @@ few steps needed.
 First, create a directory to store all your plugin files, for example:
 'example-plugin'.
 Then, create another directory in your newly created one with the name of your
-plugin with rasahub_ prefix. For example: rasahub_example.
+plugin with rasahub\_ prefix. For example: rasahub_example.
 
 In example-plugin you have to create following files:
 
