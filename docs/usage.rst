@@ -3,37 +3,38 @@
 Usage
 =====
 
-Command-Line API
-----------------
+Configuration
+-------------
 
-Start rasahub:
+First, you have to create a configuration, initializing all your plugins and
+route messages. Needed parameters for each plugin should be in there respective
+documentation. Following a basic debug-configuration to get an idea:
 
-    rasahub <<parameters>>
+    debug1:
+      package: 'rasahub_debug'
+      classname: 'DebugConnector'
+      init:
+        host: '127.0.0.1'
+        port: 5020
+      out: 'debug2'
+      type: 'interface'
 
-Parameters
-----------
+    debug2:
+      package: 'rasahub_debug'
+      classname: 'DebugConnector'
+      init:
+        host: '127.0.0.1'
+        port: 5021
+      out: 'debug1'
+      type: 'interface'
 
-+------------+------------------+---------------------------------------+-----------+-------------+
-| Parameter  | Parameter(long)  | Description                           | Required  | Default     |
-+============+==================+=======================================+===========+=============+
-| -dbu       | --dbuser         | Database username                     | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbp       | --dbpwd          | Database userpassword                 | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbh       | --dbhost         | Database host                         | optional  | 127.0.0.1   |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -dbn       | --dbname         | Database name                         | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -t         | --trigger        | Trigger-word (!bot for example)       | optional  | \!bot       |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -id        | --botid          | The bots Humhub-User ID               | required  | -           |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -rh        | --rasahost       | The hostaddress of Rasa_Core          | optional  | 127.0.0.1   |
-+------------+------------------+---------------------------------------+-----------+-------------+
-| -rp        | --rasaport       | The port of RasahubInputchannel       | optional  | 5020        |
-+------------+------------------+---------------------------------------+-----------+-------------+
 
-Example call
-------------
+Save this as config.yml in your current directory.
 
-    rasahub -dbu humuser -dbp secretpassword -dbn humhub -t !bot -id 5
+
+Starting
+--------
+
+Now you can start rasahub using:
+
+    python -m rasahub

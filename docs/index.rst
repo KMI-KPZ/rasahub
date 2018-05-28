@@ -6,16 +6,24 @@
 Welcome to Rasahub's documentation!
 ===================================
 
-Rasahub connects `Rasa_Core`_ with `Humhub`_ `Mail`_ .
+Rasahub provides an message interface to connect user interfaces with chatbots
+and several, data-providing services. Therefore it uses a plugin model.
 
-It contains the database-connector for a Humhub installation and a socket-connector
-for RasahubInputChannel which then can be used in Rasa_Core as an input channel.
+Currently there are following plugins available:
 
-Rasahub listens for new messages in the database with a bot trigger in the beginning
-or direct messages to the bot, sends the messages to Rasa_core using the message_id
-and saves the response from Rasa_Core in the Humhub database.
+* `Rasahub-Rasa`_ to send and get messages to and from `Rasa_Core`_ .
+* `Rasahub-Humhub`_ to read and save messages from and to `Humhub`_ `Mail`_ .
+* `Rasahub-Google-Calendar`_ to retrieve and save calendar entries from and to Google Calendar.
+* `Rasahub-Debug`_ to send and receive messages to and from a socket debugger called `Rasahub-Debug-Client`_ .
 
-Feel free to extend the database-connector to another mailsystem or develop an API-connector.
+These plugins are available as source and also as pypi packages:
+* Rasahub: pip install rasahub
+* Rasahub-Rasa: pip install rasahub-rasa
+* Rasahub-Humhub: pip install rasahub-humhub
+* Rasahub-Google-Calendar: pip install rasahub-google-calendar
+* Rasahub-Debug: pip install rasahub-debug
+* Rasahub-Debug-Client: pip install rasahub-debug-client
+
 
 ----
 
@@ -24,21 +32,28 @@ Feel free to extend the database-connector to another mailsystem or develop an A
    :caption: Contents:
 
    installation
+   configuration
    usage
-   rasainputchannel
+   plugin_model
+   command_hooks
 
 
 .. toctree::
    :maxdepth: 2
    :caption: APIDoc:
 
-   rasaconnector
-   dbconnector
+   rasahub
+   modules
 
 
 * License: MIT
 * `PyPi`_ - package installation
 
+.. _Rasahub-Rasa: https://github.com/frommie/rasahub-rasa
+.. _Rasahub-Humhub: https://github.com/frommie/rasahub-humhub
+.. _Rasahub-Google-Calendar: https://github.com/frommie/rasahub-google-calendar
+.. _Rasahub-Debug: https://github.com/frommie/rasahub-debug
+.. _Rasahub-Debug-Client: https://github.com/frommie/rasahub-debug-client
 .. _Rasa_Core: https://github.com/RasaHQ/rasa_core
 .. _Humhub: https://www.humhub.org/de/site/index
 .. _Mail: https://github.com/humhub/humhub-modules-mail
