@@ -17,9 +17,13 @@ extras_requires = {
     'test': tests_requires
 }
 
+def get_version():
+    version_file = open('../VERSION')
+    return version_file.read().strip()
+
 setup(
     name='rasahub',
-    version='0.3.0',
+    version=get_version(),
     description='Rasahub connects Rasa_core to Humhub Mail',
     author='Christian Frommert',
     author_email='christian.frommert@gmail.com',
