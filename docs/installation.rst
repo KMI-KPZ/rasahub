@@ -4,10 +4,11 @@ Prerequisites
 =============
 
 * Python installed
-* Humhub database access (if remote: make sure you have port 3306 opened)
 
 Installation
 ============
+
+I recommend to use `virtualenv`_ with Python 3.
 
 Pypi package
 ------------
@@ -16,4 +17,15 @@ Install via pip:
 
     pip install rasahub
 
-Rasa_Core and Rasa_NLU will be automatically installed.
+
+Bleeding-Edge Version
+---------------------
+
+Install from sources:
+
+    git clone https://github.com/DServSys/rasahub.git
+    cd rasahub
+    pip install -e .
+
+
+.. _virtualenv: https://virtualenv.pypa.io/en/stable/
