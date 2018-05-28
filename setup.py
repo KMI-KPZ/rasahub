@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+__version__ = None
+exec(open("rasa_core/version.py").read())
+
 install_requires = [
     'PyYaml',
 ]
@@ -17,13 +20,9 @@ extras_requires = {
     'test': tests_requires
 }
 
-def get_version():
-    version_file = open('../VERSION')
-    return version_file.read().strip()
-
 setup(
     name='rasahub',
-    version=get_version(),
+    version=__version__,
     description='Rasahub connects Rasa_core to Humhub Mail',
     author='Christian Frommert',
     author_email='christian.frommert@gmail.com',
