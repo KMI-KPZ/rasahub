@@ -88,15 +88,13 @@ you define your Plugin class and the initialization method:
             """
             ExamplePlugin is subclass of RasahubPlugin
             """
-            def __init__(self, **kwargs):
+            def __init__(self, parameter = 'default-value'):
                 """
                 Initializes the example plugin
                 """
 
                 super(HumhubConnector, self).__init__()
 
-                parameter = kwargs.get('parameter', 'default-value')
-                self.exampleparameter = parameter
                 self.apiconnection = fancy_api.connect(parameter)
 
 
