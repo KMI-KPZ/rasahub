@@ -71,6 +71,7 @@ Create file config.yml in working path. Example:
     package: 'rasahub_rasa'
     classname: 'RasaConnector'
     out: 'humhub'
+    type: 'interpreter'
     init:
       host: '127.0.0.1'
       port: 5020
@@ -79,6 +80,7 @@ Create file config.yml in working path. Example:
     package: 'rasahub_humhub'
     classname: 'HumhubConnector'
     out: 'rasa'
+    type: 'interface'
     init:
       host: '127.0.0.1'
       port: 3306
