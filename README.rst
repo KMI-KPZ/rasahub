@@ -105,23 +105,6 @@ Start rasahub:
 +------------+------------------------------+-----------+------------+
 
 
-Configuring Rasa
-================
-
-In your Rasa bots run.py just import the channel using
-
-.. code-block:: python
-
-  from rasahub.rasahubchannel import RasahubInputChannel
-
-
-And let the agent handle the channel:
-
-.. code-block:: python
-
-  agent.handle_channel(RasahubInputChannel('127.0.0.1', 5020))
-
-
 
 Testing
 =======
