@@ -8,20 +8,28 @@ Configuration parameters
 +============+=======================================+===========+
 | package    | Python package name of plugin         | required  |
 +------------+---------------------------------------+-----------+
-| classname  | Name of plugin class                  | required  |
-+------------+---------------------------------------+-----------+
 | init       | Initialization parameters             | required  |
 +------------+---------------------------------------+-----------+
 | out        | Output route                          | required  |
 +------------+---------------------------------------+-----------+
-| type       | Type of plugin, see below             | required  |
-+------------+---------------------------------------+-----------+
 
-Plugin types
-------------
 
-Currently there are three plugin types implemented:
+Create configuration file
+-------------------------
 
-* interface: Receives and sends user-facing messages
-* interpreter: Receives message, interpretes and sends back interpreted message
-* datastore: Will not be started but serves as data provider
+You can use the built-in configuration creation tool.
+Be sure to install your desired plugins before running the tool, for example
+rasahub_humhub and rasahub_rasa. Afterwards you can call the tool like follows:
+
+.. code-block:: bash
+
+    python3 -m rasahub.config -p rasahub_humhub rasahub_rasa -o config2.yml
+
+
++------------+-------------------------------------------+-----------+
+| Parameter  | Description                               | Required  |
++============+===========================================+===========+
+| -p         | Lists all plugins                         | required  |
++------------+-------------------------------------------+-----------+
+| -o         | sets the output config file path and name | required  |
++------------+-------------------------------------------+-----------+
