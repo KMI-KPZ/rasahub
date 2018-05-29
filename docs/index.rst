@@ -37,6 +37,7 @@ These plugins are available as source and also as pypi packages:
    configuration
    usage
    plugin_model
+   plugin_test
    command_hooks
 
 
