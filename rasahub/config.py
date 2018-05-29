@@ -43,6 +43,12 @@ def create_config(plugins):
             if pluginname != other_plugin:
                 config[pluginname]['out'] = other_plugin
 
+        config[pluginname]['type'] = "datastore"
+        # check if there are send and receive methods - then its an interface or interpreter
+        interface_methods = [m for m in members if m[0] == 'send' or m[0] == 'receive']
+        if len(interface_methods) == 2:
+            config[pluginname]['type'] = "interface"
+
     return config
 
 def save_config(config, filename):
