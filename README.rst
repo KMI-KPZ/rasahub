@@ -128,7 +128,6 @@ Testing
 
 Prerequisites:
 
-* mysql-server installed
 * testing dependencies installed: pip install .[test]
 
 Run Test:
