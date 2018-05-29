@@ -6,6 +6,7 @@ import sys
 import yaml
 import os
 import importlib
+import inspect
 
 from rasahub.messagehandler import RasahubHandler
 from rasahub.plugin import RasahubPlugin
@@ -14,7 +15,7 @@ def main():
     """The main function initializes plugins and handles messages.
     It starts the messagehandler, registers all plugins and starts the threads.
     When a Keyboard interruption is registered it starts closing all threads.
-    
+
     """
     messagehandler = RasahubHandler()
     configpath = "config.yml"
@@ -23,7 +24,13 @@ def main():
     for plugin in config:
         try:
             lib = __import__(config[plugin]['package'])
-            method = config[plugin]['classname']
+            classes = inspect.getmembers(lib, inspect.isclass)
+            method = None
+            for plugin_class in classes:
+                if plugin_class[1].__bases__[0].__name__ == 'RasahubPlugin':
+                    method = plugin_class[0]
+            if method == None:
+                raise Exception
             globals()[plugin] = lib
         except:
             print("Package " + config[plugin]['package'] + " not found.")
