@@ -41,4 +41,4 @@ Now you can start rasahub using:
 
 .. code-block:: bash
 
-    python -m rasahub
+    python -m rasahub -c config.yml

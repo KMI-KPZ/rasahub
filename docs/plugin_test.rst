@@ -67,34 +67,6 @@ using plugin.sent_message.
 
 As an example you should check out the testing of `rasahub-humhub`_ .
 
-* Python installed
-
-Installation
-============
-
-I recommend to use `virtualenv`_ with Python 3.
-
-Pypi package
-------------
-
-Install via pip:
-
-.. code-block:: bash
-
-    pip install rasahub
-
-
-Bleeding-Edge Version
----------------------
-
-Install from sources:
-
-.. code-block:: bash
-
-    git clone https://github.com/DServSys/rasahub.git
-    cd rasahub
-    pip install -e .
-
 
 .. _rasahub-humhub: https://github.com/frommie/rasahub-humhub/blob/master/tests/test_dbconnector.py
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/
