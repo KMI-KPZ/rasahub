@@ -3,6 +3,13 @@ import inspect
 import yaml
 
 def create_argparser():
+    """Creates and returns the argument parser for config creation.
+
+    Returns:
+        ArgumentParser
+
+    """
+
     parser = argparse.ArgumentParser(description='Creates the Rasahub configuration file.')
     parser.add_argument(
             '-o', '--output',
@@ -18,6 +25,15 @@ def create_argparser():
     return parser
 
 def create_config(plugins):
+    """Creates and returns the configuration given plugin names
+
+    Args:
+        plugins: List of plugins to include in config
+
+    Returns:
+        configuration as dict
+
+    """
     config = {}
     for plugin in plugins:
         pluginname = plugin
@@ -52,6 +68,14 @@ def create_config(plugins):
     return config
 
 def save_config(config, filename):
+    """Saves config to given filename in yaml format
+
+    Args:
+        config: dict containing configuration arguments for each plugin
+        filename: Filename to write yaml to
+
+    """
+
     with open(filename, 'w') as outfile:
         yaml.dump(config, outfile, default_flow_style=False)
 

@@ -84,7 +84,10 @@ class RasahubPlugin(object):
             in_message = self.receive()
             if in_message is not None:
                 # add source and target to message
-                message = RasahubMessage(message = in_message['message'], message_id = in_message['message_id'], source = self.name, target = self.target)
+                message = RasahubMessage(message = in_message['message'],
+                                         message_id = in_message['message_id'],
+                                         source = self.name,
+                                         target = self.target)
                 main_queue.put(message)
             #time.sleep(0.5)
 
@@ -127,7 +130,7 @@ class RasahubPlugin(object):
 
     def send(self, messagedata):
         """Sending function, to be implemented by plugin.
-        
+
         """
         raise NotImplementedError
 

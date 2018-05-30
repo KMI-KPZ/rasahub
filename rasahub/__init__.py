@@ -13,6 +13,16 @@ from rasahub.messagehandler import RasahubHandler
 from rasahub.plugin import RasahubPlugin
 
 def initialize_middleware(configpath = 'config.yml'):
+    """Initialize the middleware given a configuration file
+
+    Args:
+        configpath: Path and name of config file
+
+    Returns:
+        messagehandler
+
+    """
+
     messagehandler = RasahubHandler()
     config = yaml.safe_load(open(configpath))
 
@@ -46,6 +56,12 @@ def initialize_middleware(configpath = 'config.yml'):
 
 
 def create_argparser():
+    """Creates the argumentparser for Rasahub
+
+    Returns:
+        ArgumentParser
+
+    """
     parser = argparse.ArgumentParser(description='Starts Rasahub.')
     parser.add_argument(
             '-c', '--config',
