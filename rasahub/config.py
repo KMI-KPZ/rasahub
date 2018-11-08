@@ -61,8 +61,12 @@ def create_config(plugins):
 
         config[pluginname]['type'] = "datastore"
         # check if there are send and receive methods - then its an interface or interpreter
+        members = []
+        for plugin_touple in classes:
+            for cl in plugin_touple:
+                members += inspect.getmembers(cl)
         interface_methods = [m for m in members if m[0] == 'send' or m[0] == 'receive']
-        if len(interface_methods) == 2:
+        if (len(interface_methods) >= 2 and len(interface_methods)%2 == 0):
             config[pluginname]['type'] = "interface"
 
     return config
